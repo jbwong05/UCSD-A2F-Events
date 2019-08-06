@@ -1,6 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
 
+class Event:
+    def __init__(self, theName, theLocation, theDateAndTime):
+        self.eventName = theName
+        self.eventLocation = theLocation
+        self.eventDateAndTime = theDateAndTime
+
 def setup():
     # Gets HTML from A2F website
     webpage = 'http://www.ucsda2f.org/'
@@ -53,11 +59,8 @@ def main():
     datesAndTimes = stripDateAndTime(dates, times)
 
     # Prints upcoming events
-    #for i in range(len(eventNames)):
-    #    if i != 0:
-    #        print()
+    events = []
+    for i in range(len(eventNames)):
+        events.append(Event(eventNames[i], locations[i], datesAndTimes[i]))
 
-    #    print(eventNames[i])
-    #    print(locations[i])
-    #    print(datesAndTimes[i])
-    return 'test'
+    return events
