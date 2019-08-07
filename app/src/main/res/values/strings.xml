@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">A2F Events</string>
+    <string name="loading">Retrieving Events...</string>
 </resources>
