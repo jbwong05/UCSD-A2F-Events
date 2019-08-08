@@ -1,11 +1,11 @@
 package com.example.a2fevents;
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.widget.ImageView;
 import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
 import com.chaquo.python.*;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -19,20 +19,20 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final static int ONE_IMAGE = 1;
-    private final static int TWO_IMAGES = 2;
-    private final static int THREE_IMAGES = 3;
-    private final static int NUM_EVENTS = 3;
+    private final static int MAX_NUM_EVENTS = 3;
+    private final static long IMAGE_SIZE = 90000;
     private final static String SCRIPT_NAME = "getUpcomingEvents";
     private final static String MAIN_FUNCTION = "main";
     private final static String EVENT_IMAGE_LINK = "eventImageLink";
     private final static String EVENT_NAME = "eventName";
     private final static String EVENT_LOCATION = "eventLocation";
     private final static String EVENT_DATE_AND_TIME = "eventDateAndTime";
+    private final static String IMAGE_PREFIX = "img-";
+    private final static String IMAGE_EXTENSION = ".jpg";
+    private final static String FOLDER_NAME = "images";
 
     private static EventViewCollection[] eventViews;
     private static List<PyObject> events;
-    private static float screenWidth;
     private static boolean isDownloading;
     private DownloadFileFromURL downloader;
 
@@ -41,19 +41,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Displays Retrieving status
         ((TextView) findViewById(R.id.firstEventName)).setText(getResources().getString(R.string.loading));
-
-        DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
-        screenWidth = displayMetrics.widthPixels / displayMetrics.density;
 
         // Setup collections of TextViews
         eventViews = setupEventViewCollection();
 
         // Gets list upcoming events
         events = getEvents();
-
-        // Delete any previous images
-        deleteImages(getFilesDir());
 
         // Download required images
         isDownloading = false;
@@ -67,15 +62,12 @@ public class MainActivity extends AppCompatActivity {
         if(isDownloading) {
             downloader.cancel(true);
         }
-
-        // Delete previously downloaded images
-        deleteImages(getFilesDir());
     }
 
     private EventViewCollection[] setupEventViewCollection() {
 
         // Sets up the EventViewCollection array
-        EventViewCollection[] toReturn = new EventViewCollection[NUM_EVENTS];
+        EventViewCollection[] toReturn = new EventViewCollection[MAX_NUM_EVENTS];
 
         toReturn[0] = new EventViewCollection((ImageView) findViewById(R.id.firstEventImage), (TextView) findViewById(R.id.firstEventName), (TextView) findViewById(R.id.firstEventLocation), (TextView) findViewById(R.id.firstEventDateAndTime));
         toReturn[1] = new EventViewCollection((ImageView) findViewById(R.id.secondEventImage), (TextView) findViewById(R.id.secondEventName), (TextView) findViewById(R.id.secondEventLocation), (TextView) findViewById(R.id.secondEventDateAndTime));
@@ -94,59 +86,71 @@ public class MainActivity extends AppCompatActivity {
         return eventList.asList();
     }
 
-    private void deleteImages(File directory) {
-        // Deletes event images in the given directory
+    private void downloadImages(List<PyObject> events) {
+
+        // Downloads images to application internal folder
+        File folder = getApplicationContext().getDir(FOLDER_NAME, Context.MODE_PRIVATE);
+        FilesToDownload files = new FilesToDownload(folder.getAbsolutePath());
         File currentFile;
+        String currentLink;
+        PyObject pythonLink;
 
-        for(int i = 0; i < NUM_EVENTS; i++) {
-            currentFile = new File(directory, "event" + i + ".jpg");
+        // Loop through each event link
+        for(int i = 0; i < events.size(); i++) {
 
-            if(currentFile.exists()) {
-                currentFile.delete();
+            pythonLink = events.get(i).get(EVENT_IMAGE_LINK);
+
+            // Null check
+            if(pythonLink != null) {
+
+                // Determine which images have already been downloaded
+                currentLink = pythonLink.toString();
+                currentFile = new File(getFullImagePath(folder.getAbsolutePath(), currentLink));
+
+                // Checks if file already exists or is already scheduled for download
+                if(!currentFile.exists() && !files.hasLink(currentLink)) {
+                    files.addFile(currentLink);
+                }
+
+            }
+        }
+
+        // Starts async task to download images
+        if(files.hasFilesToDownload() && folder.getFreeSpace() > (files.getNumLinks() * IMAGE_SIZE)) {
+            downloader = new DownloadFileFromURL();
+            downloader.execute(files);
+
+            // Otherwise display events using already downloaded images
+        } else {
+            displayEvents(folder.getAbsolutePath());
+        }
+    }
+
+    private static void displayEvents(String destination) {
+        PyObject event;
+        PyObject eventImageLink;
+        PyObject eventName;
+        PyObject eventLocation;
+        PyObject eventDateAndTime;
+
+        // Loops through the retrieved events and updates the corresponding TextViews
+        for(int i = 0; i < events.size(); i++) {
+
+            event = events.get(i);
+            eventImageLink = event.get(EVENT_IMAGE_LINK);
+            eventName = event.get(EVENT_NAME);
+            eventLocation = event.get(EVENT_LOCATION);
+            eventDateAndTime = event.get(EVENT_DATE_AND_TIME);
+
+            // null check
+            if(eventImageLink != null && eventName != null && eventLocation != null && eventDateAndTime != null) {
+                eventViews[i].displayEvents(getFullImagePath(destination, eventImageLink.toString()), eventName.toString(), eventLocation.toString(), eventDateAndTime.toString());
             }
         }
     }
 
-    private void downloadImages(List<PyObject> events) {
-
-        // Downloads images to application internal folder
-        FilesToDownload files = null;
-        File destination = getApplicationContext().getFilesDir();
-
-        // Compresses links to one object
-        switch(events.size()) {
-            case ONE_IMAGE:
-                files = new FilesToDownload(destination,
-                        events.get(0).get(EVENT_IMAGE_LINK).toString());
-                break;
-            case TWO_IMAGES:
-                files = new FilesToDownload(destination,
-                        events.get(0).get(EVENT_IMAGE_LINK).toString(),
-                        events.get(TWO_IMAGES - 1).get(EVENT_IMAGE_LINK).toString());
-                break;
-            case THREE_IMAGES:
-                files = new FilesToDownload(destination,
-                        events.get(0).get(EVENT_IMAGE_LINK).toString(),
-                        events.get(TWO_IMAGES - 1).get(EVENT_IMAGE_LINK).toString(),
-                        events.get(THREE_IMAGES - 1).get(EVENT_IMAGE_LINK).toString());
-                break;
-        }
-
-        // Starts async task to download images
-        if(files != null) {
-            downloader = new DownloadFileFromURL();
-            downloader.execute(files);
-        }
-    }
-
-    private static void displayEvents(String destination, EventViewCollection[] eventViews, List<PyObject> events) {
-
-        // Loops through the retrieved events and updates the corresponding TextViews
-        for(int i = 0; i < events.size(); i++) {
-            PyObject event = events.get(i);
-            String imagePath = destination + "/event" + i + ".jpg";
-            eventViews[i].displayEvents(screenWidth, imagePath, event.get(EVENT_NAME).toString(), event.get(EVENT_LOCATION).toString(), event.get(EVENT_DATE_AND_TIME).toString());
-        }
+    private static String getFullImagePath(String path, String link) {
+        return path + "/" + IMAGE_PREFIX + link.hashCode() + IMAGE_EXTENSION;
     }
 
     // Inner AsyncTask that downloads images in the background
@@ -168,8 +172,9 @@ public class MainActivity extends AppCompatActivity {
             try {
 
                 // Loops through all links
-                for(int i = 0; i < links.length; i++) {
+                for(int i = 0; i < files.getNumLinks(); i++) {
 
+                    // Connect to the url
                     URL url = new URL(links[i]);
                     URLConnection connection = url.openConnection();
                     connection.connect();
@@ -178,12 +183,13 @@ public class MainActivity extends AppCompatActivity {
                     InputStream input = new BufferedInputStream(url.openStream(), 8192);
 
                     // Output stream
-                    OutputStream output = new FileOutputStream(files.getDestination() + "/event" + i + ".jpg");
+                    OutputStream output = new FileOutputStream(getFullImagePath(files.getDestination(), links[i]));
 
                     byte[] data = new byte[1024];
 
                     long total = 0;
 
+                    // While there are still bytes to write
                     while ((count = input.read(data)) != -1) {
                         total += count;
 
@@ -197,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
                     // Closing streams
                     output.close();
                     input.close();
+
                 }
 
             } catch (Exception e) {
@@ -209,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String destination) {
             // Display events after images downloaded
-            displayEvents(destination, eventViews, events);
+            displayEvents(destination);
             isDownloading = false;
         }
     }
