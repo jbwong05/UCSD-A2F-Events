@@ -43,8 +43,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Apply action bar layout
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.actionbar_layout);
+        ActionBar actionBar = getSupportActionBar();
+
+        // null Check
+        if(actionBar != null) {
+            actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+            actionBar.setCustomView(R.layout.actionbar_layout);
+        }
 
         // Displays Retrieving status
         ((TextView) findViewById(R.id.firstEventName)).setText(getResources().getString(R.string.loading));
