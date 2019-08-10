@@ -42,17 +42,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Apply action bar layout
-        ActionBar actionBar = getSupportActionBar();
-
-        // null Check
-        if(actionBar != null) {
-            actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-            actionBar.setCustomView(R.layout.actionbar_layout);
-        }
+        // Configures the action bar
+        configureActionBar();
 
         // Displays Retrieving status
-        ((TextView) findViewById(R.id.firstEventName)).setText(getResources().getString(R.string.loading));
+        setStatus(getResources().getString(R.string.retrieving));
 
         // Setup collections of TextViews
         eventViews = setupEventViewCollection();
@@ -60,9 +54,17 @@ public class MainActivity extends AppCompatActivity {
         // Gets list upcoming events
         events = getEvents();
 
-        // Download required images
-        isDownloading = false;
-        downloadImages(events);
+        // Checks if events found
+        if(events.size() > 0) {
+
+            // Download required images
+            isDownloading = false;
+            downloadImages(events);
+
+        } else {
+            // Set no events found status
+            setStatus(getResources().getString(R.string.no_events));
+        }
     }
 
     @Override
@@ -72,6 +74,22 @@ public class MainActivity extends AppCompatActivity {
         if(isDownloading) {
             downloader.cancel(true);
         }
+    }
+
+    private void configureActionBar() {
+        // Apply action bar layout
+        ActionBar actionBar = getSupportActionBar();
+
+        // null Check
+        if(actionBar != null) {
+            actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+            actionBar.setCustomView(R.layout.actionbar_layout);
+        }
+    }
+
+    private void setStatus(String status) {
+        // Displays Retrieving status
+        ((TextView) findViewById(R.id.firstEventName)).setText(status);
     }
 
     private EventViewCollection[] setupEventViewCollection() {

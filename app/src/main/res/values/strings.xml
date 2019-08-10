@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">A2F Events</string>
-    <string name="loading">Retrieving Events...</string>
+    <string name="retrieving">Retrieving Events#8230</string>
+    <string name="no_events">No Upcoming Events found :(</string>
 </resources>

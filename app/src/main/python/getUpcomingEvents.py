@@ -14,15 +14,6 @@ def setup():
     request = requests.get(webpage)
     return BeautifulSoup(request.text, 'html.parser')
 
-def stripImageLinks(images):
-    # Strips links to event images
-    strippedImageLinks = []
-
-    for image in images:
-        strippedImageLinks.append(image['data-image'])
-
-    return strippedImageLinks
-
 def stripEventNames(eventNames):
     # Strips text from event tags
     strippedEvents = []
@@ -31,6 +22,15 @@ def stripEventNames(eventNames):
         strippedEvents.append(event.text)
 
     return strippedEvents
+
+def stripImageLinks(images):
+    # Strips links to event images
+    strippedImageLinks = []
+
+    for image in images:
+        strippedImageLinks.append(image['data-image'])
+
+    return strippedImageLinks
 
 def stripLocations(locations):
     # Strips text from location tags
@@ -58,22 +58,29 @@ def main():
     soup = setup()
     
     # Get Information
-    images = soup.find_all('img', attrs={'class': 'summary-thumbnail-image'})
-    images = stripImageLinks(images)
-
     eventNames = soup.find_all('a', attrs={'class': 'summary-title-link'})
     eventNames = stripEventNames(eventNames)
 
-    locations = soup.find_all('div', attrs={'class': 'summary-excerpt'})
-    locations = stripLocations(locations)
+    # Checks if events found
+    if len(eventNames) > 0:
 
-    dates = soup.find_all('time', attrs={'class': 'summary-metadata-item summary-metadata-item--date'})
-    times = soup.find_all('span', attrs={'class': 'event-time-12hr'})
-    datesAndTimes = stripDateAndTime(dates, times)
+        images = soup.find_all('img', attrs={'class': 'summary-thumbnail-image'})
+        images = stripImageLinks(images)
 
-    # Constructs list of upcoming events
-    events = []
-    for i in range(len(eventNames)):
-        events.append(Event(images[i], eventNames[i], locations[i], datesAndTimes[i]))
+        locations = soup.find_all('div', attrs={'class': 'summary-excerpt'})
+        locations = stripLocations(locations)
 
-    return events
+        dates = soup.find_all('time', attrs={'class': 'summary-metadata-item summary-metadata-item--date'})
+        times = soup.find_all('span', attrs={'class': 'event-time-12hr'})
+        datesAndTimes = stripDateAndTime(dates, times)
+
+        # Constructs list of upcoming events
+        events = []
+        for i in range(len(eventNames)):
+            events.append(Event(images[i], eventNames[i], locations[i], datesAndTimes[i]))
+
+        return events
+
+    else:
+        # Return empty list if no events found
+        return []
