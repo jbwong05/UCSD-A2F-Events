@@ -22,15 +22,12 @@ public class MainActivity extends AppCompatActivity {
 
     private final static int MAX_NUM_EVENTS = 3;
     private final static long IMAGE_SIZE = 90000;
-    private final static String SCRIPT_NAME = "getUpcomingEvents";
-    private final static String MAIN_FUNCTION = "main";
-    private final static String EVENT_IMAGE_LINK = "eventImageLink";
-    private final static String EVENT_NAME = "eventName";
-    private final static String EVENT_LOCATION = "eventLocation";
-    private final static String EVENT_DATE_AND_TIME = "eventDateAndTime";
-    private final static String IMAGE_PREFIX = "img-";
-    private final static String IMAGE_EXTENSION = ".jpg";
-    private final static String FOLDER_NAME = "images";
+    private static String EVENT_IMAGE_LINK;
+    private static String EVENT_NAME;
+    private static String EVENT_LOCATION;
+    private static String EVENT_DATE_AND_TIME;
+    private static String IMAGE_PREFIX;
+    private static String IMAGE_EXTENSION;
 
     private static EventViewCollection[] eventViews;
     private static List<PyObject> events;
@@ -44,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Configures the action bar
         configureActionBar();
+
+        // Get string constants from xml
+        getStrings();
 
         // Displays Retrieving status
         setStatus(getResources().getString(R.string.retrieving));
@@ -87,6 +87,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void getStrings() {
+        EVENT_IMAGE_LINK = getResources().getString(R.string.event_image_link);
+        EVENT_NAME = getResources().getString(R.string.event_name);
+        EVENT_LOCATION = getResources().getString(R.string.event_location);
+        EVENT_DATE_AND_TIME = getResources().getString(R.string.event_date_and_time);
+        IMAGE_PREFIX = getResources().getString(R.string.image_prefix);
+        IMAGE_EXTENSION = getResources().getString(R.string.image_extension);
+    }
+
     private void setStatus(String status) {
         // Displays Retrieving status
         ((TextView) findViewById(R.id.firstEventName)).setText(status);
@@ -108,8 +117,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Calls the getUpcomingEvents python script to retrieve any upcoming events
         Python py = Python.getInstance();
-        PyObject eventGetter = py.getModule(SCRIPT_NAME);
-        PyObject eventList = eventGetter.callAttr(MAIN_FUNCTION);
+        PyObject eventGetter = py.getModule(getResources().getString(R.string.script_name));
+        PyObject eventList = eventGetter.callAttr(getResources().getString(R.string.main_function));
 
         return eventList.asList();
     }
@@ -117,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
     private void downloadImages(List<PyObject> events) {
 
         // Downloads images to application internal folder
-        File folder = getApplicationContext().getDir(FOLDER_NAME, Context.MODE_PRIVATE);
+        File folder = getApplicationContext().getDir(getResources().getString(R.string.folder_name), Context.MODE_PRIVATE);
         FilesToDownload files = new FilesToDownload(folder.getAbsolutePath());
         File currentFile;
         String currentLink;
