@@ -10,10 +10,6 @@
         android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,11 +34,43 @@
                 app:srcCompat="@android:color/transparent" />
 
             <TextView
+                android:id="@+id/firstEventMonth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@color/white"
+                android:fontFamily="@font/raleway"
+                android:gravity="center"
+                android:textColor="@color/month_and_day_number"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/firstEventDayNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@color/white"
+                android:fontFamily="@font/raleway"
+                android:gravity="center"
+                android:textColor="@color/month_and_day_number"
+                android:textSize="33sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/firstEventMonth" />
+
+            <TextView
                 android:id="@+id/firstEventName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:fontFamily="@font/raleway"
+                android:textColor="@color/event_name"
                 android:textSize="24sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/firstEventImage" />
@@ -51,6 +79,9 @@
                 android:id="@+id/firstEventLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/raleway_bold"
+                android:textColor="@color/location"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -61,7 +92,10 @@
                 android:id="@+id/firstEventDateAndTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="22sp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/raleway"
+                android:textColor="@color/date_and_time"
+                android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/firstEventLocation" />
@@ -79,11 +113,43 @@
                 app:srcCompat="@android:color/transparent" />
 
             <TextView
+                android:id="@+id/secondEventMonth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@color/white"
+                android:fontFamily="@font/raleway"
+                android:gravity="center"
+                android:textColor="@color/month_and_day_number"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="@+id/secondEventImage"
+                app:layout_constraintTop_toTopOf="@+id/secondEventImage" />
+
+            <TextView
+                android:id="@+id/secondEventDayNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@color/white"
+                android:fontFamily="@font/raleway"
+                android:gravity="center"
+                android:textColor="@color/month_and_day_number"
+                android:textSize="33sp"
+                app:layout_constraintEnd_toEndOf="@+id/secondEventImage"
+                app:layout_constraintTop_toBottomOf="@+id/secondEventMonth" />
+
+            <TextView
                 android:id="@+id/secondEventName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:fontFamily="@font/raleway"
+                android:textColor="@color/event_name"
                 android:textSize="24sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/secondEventImage" />
@@ -92,6 +158,9 @@
                 android:id="@+id/secondEventLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/raleway_bold"
+                android:textColor="@color/location"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -102,7 +171,10 @@
                 android:id="@+id/secondEventDateAndTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="22sp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/raleway"
+                android:textColor="@color/date_and_time"
+                android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/secondEventLocation" />
@@ -122,11 +194,43 @@
                 app:srcCompat="@android:color/transparent" />
 
             <TextView
+                android:id="@+id/thirdEventMonth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="12dp"
+                android:background="@color/white"
+                android:fontFamily="@font/raleway"
+                android:gravity="center"
+                android:textColor="@color/month_and_day_number"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="@+id/thirdEventImage"
+                app:layout_constraintTop_toTopOf="@+id/thirdEventImage" />
+
+            <TextView
+                android:id="@+id/thirdEventDayNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@color/white"
+                android:fontFamily="@font/raleway"
+                android:gravity="center"
+                android:textColor="@color/month_and_day_number"
+                android:textSize="33sp"
+                app:layout_constraintEnd_toEndOf="@+id/thirdEventImage"
+                app:layout_constraintTop_toBottomOf="@+id/thirdEventMonth" />
+
+            <TextView
                 android:id="@+id/thirdEventName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:fontFamily="@font/raleway"
+                android:textColor="@color/event_name"
                 android:textSize="24sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/thirdEventImage" />
@@ -135,6 +239,9 @@
                 android:id="@+id/thirdEventLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/raleway_bold"
+                android:textColor="@color/location"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -145,7 +252,10 @@
                 android:id="@+id/thirdEventDateAndTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="22sp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/raleway"
+                android:textColor="@color/date_and_time"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

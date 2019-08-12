@@ -2,8 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 
 class Event:
-    def __init__(self, theImageLink, theName, theLocation, theDateAndTime):
+    def __init__(self, theImageLink, theMonth, theDayNumber, theName, theLocation, theDateAndTime):
         self.eventImageLink = theImageLink
+        self.eventMonth = theMonth
+        self.eventDayNumber = theDayNumber
         self.eventName = theName
         self.eventLocation = theLocation
         self.eventDateAndTime = theDateAndTime
@@ -32,14 +34,33 @@ def stripImageLinks(images):
 
     return strippedImageLinks
 
+def stripMonths(months):
+    # Strips text from month tags
+    strippedMonths = []
+
+    for month in months:
+        strippedMonths.append(month.text)
+
+    return strippedMonths
+
+def stripDayNumbers(dayNumbers):
+    # Strips text from day number tags
+
+    strippedDayNumbers = []
+
+    for dayNumber in dayNumbers:
+        strippedDayNumbers.append(dayNumber.text)
+
+    return strippedDayNumbers
+
 def stripLocations(locations):
     # Strips text from location tags
-    strippedList = []
+    strippedLocations = []
 
     for location in locations:
-        strippedList.append(location.p.strong.text)
+        strippedLocations.append(location.p.strong.text)
 
-    return strippedList
+    return strippedLocations
 
 def stripDateAndTime(dates, times):
     # Strips and combines dates and times
@@ -67,6 +88,12 @@ def main():
         images = soup.find_all('img', attrs={'class': 'summary-thumbnail-image'})
         images = stripImageLinks(images)
 
+        months = soup.find_all('span', attrs={'class': 'summary-thumbnail-event-date-month'})
+        months = stripMonths(months)
+
+        dayNumbers = soup.find_all('span', attrs={'class': 'summary-thumbnail-event-date-day'})
+        dayNumbers = stripDayNumbers(dayNumbers)
+
         locations = soup.find_all('div', attrs={'class': 'summary-excerpt'})
         locations = stripLocations(locations)
 
@@ -77,7 +104,7 @@ def main():
         # Constructs list of upcoming events
         events = []
         for i in range(len(eventNames)):
-            events.append(Event(images[i], eventNames[i], locations[i], datesAndTimes[i]))
+            events.append(Event(images[i], months[i], dayNumbers[i], eventNames[i], locations[i], datesAndTimes[i]))
 
         return events
 

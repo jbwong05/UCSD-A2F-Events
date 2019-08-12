@@ -1,37 +1,28 @@
 package com.example.a2fevents;
 
-import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 import android.widget.TextView;
-import java.io.File;
 
 public class EventViewCollection {
 
-    private ImageView imageView;
-    private TextView nameView;
-    private TextView locationView;
-    private TextView dateAndTimeView;
+    private ImageViewsCollection imageViewsCollection;
+    private InfoViewsCollection infoViewsCollection;
 
-    public EventViewCollection(ImageView theImageView, TextView theNameView, TextView theLocationView, TextView theDateAndTimeView) {
+    public EventViewCollection(ImageView theImageView, TextView theMonthView, TextView theDayNumberView, TextView theNameView, TextView theLocationView, TextView theDateAndTimeView) {
 
-        // Stores the views for this event in instance variables
-        imageView = theImageView;
-        nameView = theNameView;
-        locationView = theLocationView;
-        dateAndTimeView = theDateAndTimeView;
+        // Creates collection objects for Views
+        imageViewsCollection = new ImageViewsCollection(theImageView, theMonthView, theDayNumberView);
+        infoViewsCollection = new InfoViewsCollection(theNameView, theLocationView, theDateAndTimeView);
     }
 
-    public void displayEvents(String imagePath, String name, String location, String dateAndTime) {
+    public ImageViewsCollection getImageViewsCollection() {
+        return imageViewsCollection;
+    }
 
-        // Displays the image if it exists
-        File image = new File(imagePath);
-        if(image.exists()) {
-            imageView.setImageBitmap(BitmapFactory.decodeFile(imagePath));
-        }
+    public void displayEvents(String imagePath, String month, String dayNumber, String name, String location, String dateAndTime) {
 
-        // Updates the text of the TextViews
-        nameView.setText(name);
-        locationView.setText(location);
-        dateAndTimeView.setText(dateAndTime);
+        // Delegates to each collection
+        imageViewsCollection.displayEvent(imagePath, month, dayNumber);
+        infoViewsCollection.displayEvent(name, location, dateAndTime);
     }
 }

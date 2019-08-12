@@ -1,14 +1,19 @@
 <resources>
+    <string name="package_name">com.gp.a2fevents</string>
     <string name="app_name">A2F Events</string>
     <string name="retrieving">Retrieving Events&#8230;</string>
     <string name="no_events">No Upcoming Events found :(</string>
     <string name="script_name">getUpcomingEvents</string>
     <string name="main_function">main</string>
     <string name="event_image_link">eventImageLink</string>
+    <string name="event_month">eventMonth</string>
+    <string name="event_day_number">eventDayNumber</string>
     <string name="event_name">eventName</string>
     <string name="event_location">eventLocation</string>
     <string name="event_date_and_time">eventDateAndTime</string>
     <string name="image_prefix">img-</string>
     <string name="image_extension">.jpg</string>
     <string name="folder_name">images</string>
+    <string name="image_drawn_receiver_intent">com.gp.a2fevents.IMAGE_DRAWN</string>
+    <string name="image_view_id">id</string>
 </resources>

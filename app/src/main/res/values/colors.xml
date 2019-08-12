@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#000000</color>
-    <color name="white">#ffffff</color>
+    <color name="white">#FFFFFF</color>
+    <color name="month_and_day_number">#333333</color>
+    <color name="event_name">#1C1C1C</color>
+    <color name="location">#AB2E2D2D</color>
+    <color name="date_and_time">#801C1C1C</color>
 </resources>
