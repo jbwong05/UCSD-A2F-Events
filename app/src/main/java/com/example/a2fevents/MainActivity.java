@@ -18,7 +18,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
-
 public class MainActivity extends AppCompatActivity {
 
     private static final int FIRST = 0;
@@ -27,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int MAX_NUM_EVENTS = 3;
     private static final long IMAGE_SIZE = 90000;
     private static String EVENT_IMAGE_LINK;
+    private static String EVENT_IMAGE_NAME;
     private static String EVENT_MONTH;
     private static String EVENT_DAY_NUMBER;
     private static String EVENT_NAME;
@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
     private void getStrings() {
         // Retrieves String constants from xml
         EVENT_IMAGE_LINK = getResources().getString(R.string.event_image_link);
+        EVENT_IMAGE_NAME = getResources().getString(R.string.event_image_name);
         EVENT_MONTH = getResources().getString(R.string.event_month);
         EVENT_DAY_NUMBER = getResources().getString(R.string.event_day_number);
         EVENT_NAME = getResources().getString(R.string.event_name);
@@ -176,31 +177,33 @@ public class MainActivity extends AppCompatActivity {
         File folder = getApplicationContext().getDir(getResources().getString(R.string.folder_name), Context.MODE_PRIVATE);
         FilesToDownload files = new FilesToDownload(folder.getAbsolutePath());
         File currentFile;
-        String currentLink;
         PyObject pythonLink;
+        PyObject pythonImageName;
+        Image currentImage;
 
         // Loop through each event link
         for(int i = 0; i < events.size(); i++) {
 
             pythonLink = events.get(i).get(EVENT_IMAGE_LINK);
+            pythonImageName = events.get(i).get(EVENT_IMAGE_NAME);
 
             // Null check
-            if(pythonLink != null) {
+            if(pythonLink != null && pythonImageName != null) {
 
                 // Determine which images have already been downloaded
-                currentLink = pythonLink.toString();
-                currentFile = new File(getFullImagePath(folder.getAbsolutePath(), currentLink));
+                currentImage = new Image(pythonImageName.toString(), pythonLink.toString());
+                currentFile = new File(getFullImagePath(folder.getAbsolutePath(), currentImage.getName()));
 
                 // Checks if file already exists or is already scheduled for download
-                if(!currentFile.exists() && !files.hasLink(currentLink)) {
-                    files.addFile(currentLink);
+                if(!currentFile.exists() && !files.hasImage(currentImage)) {
+                    files.addImage(currentImage);
                 }
 
             }
         }
 
         // Starts async task to download images
-        if(files.hasFilesToDownload() && folder.getFreeSpace() > (files.getNumLinks() * IMAGE_SIZE)) {
+        if(files.hasImagesToDownload() && folder.getFreeSpace() > (files.getNumImages() * IMAGE_SIZE)) {
             downloader = new DownloadFileFromURL();
             downloader.execute(files);
 
@@ -212,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static void displayEvents(String destination) {
         PyObject event;
-        PyObject eventImageLink;
+        PyObject eventImageName;
         PyObject eventMonth;
         PyObject eventDayNumber;
         PyObject eventName;
@@ -223,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i < events.size(); i++) {
 
             event = events.get(i);
-            eventImageLink = event.get(EVENT_IMAGE_LINK);
+            eventImageName = event.get(EVENT_IMAGE_NAME);
             eventMonth = event.get(EVENT_MONTH);
             eventDayNumber = event.get(EVENT_DAY_NUMBER);
             eventName = event.get(EVENT_NAME);
@@ -231,14 +234,14 @@ public class MainActivity extends AppCompatActivity {
             eventDateAndTime = event.get(EVENT_DATE_AND_TIME);
 
             // null check
-            if(eventImageLink != null && eventMonth != null && eventDayNumber != null && eventName != null && eventLocation != null && eventDateAndTime != null) {
-                eventViews[i].displayEvents(getFullImagePath(destination, eventImageLink.toString()), eventMonth.toString(), eventDayNumber.toString(), eventName.toString(), eventLocation.toString(), eventDateAndTime.toString());
+            if(eventImageName != null && eventMonth != null && eventDayNumber != null && eventName != null && eventLocation != null && eventDateAndTime != null) {
+                eventViews[i].displayEvents(getFullImagePath(destination, eventImageName.toString()), eventMonth.toString(), eventDayNumber.toString(), eventName.toString(), eventLocation.toString(), eventDateAndTime.toString());
             }
         }
     }
 
-    private static String getFullImagePath(String path, String link) {
-        return path + "/" + IMAGE_PREFIX + link.hashCode() + IMAGE_EXTENSION;
+    private static String getFullImagePath(String path, String imageName) {
+        return path + "/" + IMAGE_PREFIX + imageName.hashCode() + IMAGE_EXTENSION;
     }
 
     // Inner AsyncTask that downloads images in the background
@@ -255,15 +258,15 @@ public class MainActivity extends AppCompatActivity {
             // Downloads images in a background thread
             int count;
             FilesToDownload files = filesArr[0];
-            String[] links = files.getLinks();
+            Image[] images = files.getImages();
 
             try {
 
                 // Loops through all links
-                for(int i = 0; i < files.getNumLinks(); i++) {
+                for(int i = 0; i < files.getNumImages(); i++) {
 
                     // Connect to the url
-                    URL url = new URL(links[i]);
+                    URL url = new URL(images[i].getLink());
                     URLConnection connection = url.openConnection();
                     connection.connect();
 
@@ -271,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
                     InputStream input = new BufferedInputStream(url.openStream(), 8192);
 
                     // Output stream
-                    OutputStream output = new FileOutputStream(getFullImagePath(files.getDestination(), links[i]));
+                    OutputStream output = new FileOutputStream(getFullImagePath(files.getDestination(), images[i].getName()));
 
                     byte[] data = new byte[1024];
 

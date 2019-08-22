@@ -7,48 +7,48 @@ public class FilesToDownload {
     private static final int SECOND_LINK_INDEX = 1;
     private static final int THIRD_LINK_INDEX = 2;
     private String destination;
-    private String[] links;
-    private int numLinks;
+    private Image[] images;
+    private int numImages;
 
     public FilesToDownload(String theDestination) {
         // Stores off instance variables
         destination = theDestination;
-        links = new String[MAX_NUM_EVENTS];
-        numLinks = 0;
+        images = new Image[MAX_NUM_EVENTS];
+        numImages = 0;
     }
 
-    public void addFile(String link) {
+    public void addImage(Image newImage) {
 
-        // Adds the provided link to the String array
-        int newIndex = links[FIRST_LINK_INDEX] == null ? FIRST_LINK_INDEX : (links[SECOND_LINK_INDEX] == null ? SECOND_LINK_INDEX : THIRD_LINK_INDEX);
+        // Adds the provided link to the Image array
+        int newIndex = images[FIRST_LINK_INDEX] == null ? FIRST_LINK_INDEX : (images[SECOND_LINK_INDEX] == null ? SECOND_LINK_INDEX : THIRD_LINK_INDEX);
 
-        links[newIndex] = link;
-        numLinks++;
+        images[newIndex] = newImage;
+        numImages++;
     }
 
     public String getDestination() {
         return destination;
     }
 
-    public String[] getLinks() {
-        return links;
+    public Image[] getImages() {
+        return images;
     }
 
-    public int getNumLinks() {
-        return numLinks;
+    public int getNumImages() {
+        return numImages;
     }
 
-    public boolean hasFilesToDownload() {
+    public boolean hasImagesToDownload() {
         // Returns if links have been added to the links array
-        return numLinks != 0;
+        return numImages != 0;
     }
 
-    public boolean hasLink(String link) {
+    public boolean hasImage(Image theImage) {
 
         // Determines if link has already been added
-        for(int i = 0; i < numLinks; i++) {
+        for(int i = 0; i < numImages; i++) {
 
-            if(links[i].equals(link)) {
+            if(images[i].equals(theImage)) {
                 return true;
             }
         }

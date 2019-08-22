@@ -2,8 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 
 class Event:
-    def __init__(self, theImageLink, theMonth, theDayNumber, theName, theLocation, theDateAndTime):
+    def __init__(self, theImageLink, theImageName, theMonth, theDayNumber, theName, theLocation, theDateAndTime):
         self.eventImageLink = theImageLink
+        self.eventImageName = theImageName
         self.eventMonth = theMonth
         self.eventDayNumber = theDayNumber
         self.eventName = theName
@@ -33,6 +34,15 @@ def stripImageLinks(images):
         strippedImageLinks.append(image['data-image'])
 
     return strippedImageLinks
+
+def stripImageNames(images):
+    # Strips image names
+    strippedImageNames = []
+
+    for imageLink in images:
+        strippedImageNames.append(imageLink[imageLink.rfind('/') + 1:])
+
+    return strippedImageNames
 
 def stripMonths(months):
     # Strips text from month tags
@@ -88,6 +98,9 @@ def main():
         images = soup.find_all('img', attrs={'class': 'summary-thumbnail-image'})
         images = stripImageLinks(images)
 
+        imageNames = []
+        imageNames = stripImageNames(images)
+
         months = soup.find_all('span', attrs={'class': 'summary-thumbnail-event-date-month'})
         months = stripMonths(months)
 
@@ -104,7 +117,7 @@ def main():
         # Constructs list of upcoming events
         events = []
         for i in range(len(eventNames)):
-            events.append(Event(images[i], months[i], dayNumbers[i], eventNames[i], locations[i], datesAndTimes[i]))
+            events.append(Event(images[i], imageNames[i], months[i], dayNumbers[i], eventNames[i], locations[i], datesAndTimes[i]))
 
         return events
 

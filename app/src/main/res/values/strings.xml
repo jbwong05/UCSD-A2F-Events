@@ -6,6 +6,7 @@
     <string name="script_name">getUpcomingEvents</string>
     <string name="main_function">main</string>
     <string name="event_image_link">eventImageLink</string>
+    <string name="event_image_name">eventImageName</string>
     <string name="event_month">eventMonth</string>
     <string name="event_day_number">eventDayNumber</string>
     <string name="event_name">eventName</string>
