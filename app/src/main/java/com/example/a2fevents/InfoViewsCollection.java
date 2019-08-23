@@ -14,6 +14,12 @@ public class InfoViewsCollection {
         dateAndTimeView = theDateAndTimeView;
     }
 
+    public void setStatus(String status) {
+        if(nameView.getId() == R.id.firstEventName) {
+            nameView.setText(status);
+        }
+    }
+
     public void displayEvent(String name, String location, String dateAndTime) {
 
         // Updates the text of the TextViews

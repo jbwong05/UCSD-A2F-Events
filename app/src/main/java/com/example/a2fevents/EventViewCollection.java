@@ -19,6 +19,10 @@ public class EventViewCollection {
         return imageViewsCollection;
     }
 
+    public void setStatus(String status) {
+        infoViewsCollection.setStatus(status);
+    }
+
     public void displayEvents(String imagePath, String month, String dayNumber, String name, String location, String dateAndTime) {
 
         // Delegates to each collection
