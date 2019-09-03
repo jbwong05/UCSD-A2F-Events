@@ -17,4 +17,9 @@
     <string name="folder_name">images</string>
     <string name="image_drawn_receiver_intent">com.gp.a2fevents.IMAGE_DRAWN</string>
     <string name="image_view_id">id</string>
+    <string name="add_to_calendar_prompt">Add event to calendar?</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="add_to_calendar_button">Add</string>
+    <string name="calendar_prompt_tag">calendar</string>
+    <string name="calendar_intent_type">vnd.android.cursor.item/event</string>
 </resources>

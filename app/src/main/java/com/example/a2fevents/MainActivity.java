@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.SparseArray;
+import android.view.View;
 import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageDrawnReceiver imageDrawnReceiver;
     private EventRetriever retriever;
+    private EventViewCollection[] eventViews;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         StringConstants.setupStringConstants(getApplicationContext());
 
         // Setup collection of Views
-        EventViewCollection[] eventViews = setupEventViewCollection();
+        eventViews = setupEventViewCollection();
 
         // Register ImageDrawnReceiver
         registerImageDrawnReceiver(eventViews);
@@ -102,5 +104,22 @@ public class MainActivity extends AppCompatActivity {
                 (TextView) findViewById(R.id.thirdEventDateAndTime));
 
         return toReturn;
+    }
+
+    public void addToCalendar(View view) {
+
+        // Determine which View collection the view is apart of
+        int index = 0;
+        boolean found = false;
+        while(index < MAX_NUM_EVENTS && !found) {
+
+            found = eventViews[index].contains(view);
+            index = found ? index : index + 1;
+        }
+
+        if(index < MAX_NUM_EVENTS && !eventViews[index].isEmpty()) {
+            // Prompt for calendar addition
+            new AddToCalendarDialogFragment(eventViews[index]).show(getSupportFragmentManager(), StringConstants.CALENDAR_PROMPT_TAG);
+        }
     }
 }

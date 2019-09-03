@@ -18,6 +18,8 @@ public class StringConstants {
     public static String NO_EVENTS;
     public static String SCRIPT_NAME;
     public static String MAIN_FUNCTION;
+    public static String CALENDAR_PROMPT_TAG;
+    public static String CALENDAR_INTENT_TYPE;
 
     public static void setupStringConstants(Context context) {
         // Retrieves String constants from xml
@@ -37,5 +39,7 @@ public class StringConstants {
         NO_EVENTS = resources.getString(R.string.no_events);
         SCRIPT_NAME = resources.getString(R.string.script_name);
         MAIN_FUNCTION = resources.getString(R.string.main_function);
+        CALENDAR_PROMPT_TAG = resources.getString(R.string.calendar_prompt_tag);
+        CALENDAR_INTENT_TYPE = resources.getString(R.string.calendar_intent_type);
     }
 }

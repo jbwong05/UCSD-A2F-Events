@@ -1,6 +1,7 @@
 package com.example.a2fevents;
 
 import android.graphics.BitmapFactory;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -41,5 +42,10 @@ public class ImageViewsCollection {
         // Updates the text of the TextViews
         monthView.setText(month);
         dayNumberView.setText(dayNumber);
+    }
+
+    public boolean contains(View view) {
+        int currentId = view.getId();
+        return imageView.getId() == currentId || monthView.getId() == currentId || dayNumberView.getId() == currentId;
     }
 }
