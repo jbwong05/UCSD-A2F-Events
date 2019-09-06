@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -84,19 +85,21 @@ public class MainActivity extends AppCompatActivity {
         // Sets up the EventViewCollection array
         EventViewCollection[] toReturn = new EventViewCollection[MAX_NUM_EVENTS];
 
-        toReturn[FIRST] = new EventViewCollection((ProportionalImageView) findViewById(R.id.firstEventImage),
+        ConstraintLayout constraintLayout = findViewById(R.id.internalConstraintLayout);
+
+        toReturn[FIRST] = new EventViewCollection(constraintLayout, (ProportionalImageView) findViewById(R.id.firstEventImage),
                 (TextView) findViewById(R.id.firstEventMonth),
                 (TextView) findViewById(R.id.firstEventDayNumber),
                 (TextView) findViewById(R.id.firstEventName),
                 (TextView) findViewById(R.id.firstEventLocation),
                 (TextView) findViewById(R.id.firstEventDateAndTime));
-        toReturn[SECOND] = new EventViewCollection((ProportionalImageView) findViewById(R.id.secondEventImage),
+        toReturn[SECOND] = new EventViewCollection(constraintLayout, (ProportionalImageView) findViewById(R.id.secondEventImage),
                 (TextView) findViewById(R.id.secondEventMonth),
                 (TextView) findViewById(R.id.secondEventDayNumber),
                 (TextView) findViewById(R.id.secondEventName),
                 (TextView) findViewById(R.id.secondEventLocation),
                 (TextView) findViewById(R.id.secondEventDateAndTime));
-        toReturn[THIRD] = new EventViewCollection((ProportionalImageView) findViewById(R.id.thirdEventImage),
+        toReturn[THIRD] = new EventViewCollection(constraintLayout, (ProportionalImageView) findViewById(R.id.thirdEventImage),
                 (TextView) findViewById(R.id.thirdEventMonth),
                 (TextView) findViewById(R.id.thirdEventDayNumber),
                 (TextView) findViewById(R.id.thirdEventName),

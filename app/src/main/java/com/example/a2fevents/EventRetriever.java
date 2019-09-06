@@ -12,7 +12,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
-public class EventRetriever extends AsyncTask<Void, Void, Boolean> {
+public class EventRetriever extends AsyncTask<Void, Integer, Boolean> {
 
     private static final long IMAGE_SIZE = 90000;
     private File folder;
@@ -30,6 +30,9 @@ public class EventRetriever extends AsyncTask<Void, Void, Boolean> {
         // Gets list upcoming events
         events = getEvents();
 
+        // Publishes the amount of events retrieved
+        publishProgress(events.size());
+
         // Checks if events found
         if(events.size() > 0) {
 
@@ -45,6 +48,14 @@ public class EventRetriever extends AsyncTask<Void, Void, Boolean> {
 
         } else {
             return false;
+        }
+    }
+
+    @Override
+    protected void onProgressUpdate(Integer... numEvents) {
+        // Removes extra views
+        for(int i = 2; i > numEvents[0] - 1; i--) {
+            eventViews[i].getConstraintLayout().removeViews( 6 *i, 6);
         }
     }
 

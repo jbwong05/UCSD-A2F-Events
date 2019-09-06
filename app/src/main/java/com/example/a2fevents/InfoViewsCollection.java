@@ -2,7 +2,6 @@ package com.example.a2fevents;
 
 import android.view.View;
 import android.widget.TextView;
-
 import java.util.Calendar;
 
 public class InfoViewsCollection {
@@ -49,6 +48,7 @@ public class InfoViewsCollection {
     }
 
     public String getLocation() {
+        // Parses the specific location
         String text = locationView.getText().toString();
         text = text.substring(text.indexOf('@') + 2);
 
@@ -60,6 +60,7 @@ public class InfoViewsCollection {
     }
 
     public int getMonth() {
+        // Parses the specific month
         String text = dateAndTimeView.getText().toString();
         text = text.substring(0, text.indexOf(' '));
 
@@ -94,6 +95,7 @@ public class InfoViewsCollection {
     }
 
     public int getDayNumber() {
+        // Parses the specific day number
         String text = dateAndTimeView.getText().toString();
         text = text.substring(text.indexOf(' ') + 1);
         text = text.substring(0, text.indexOf(','));
@@ -101,6 +103,7 @@ public class InfoViewsCollection {
     }
 
     public int getYear() {
+        // Parses the specific year
         String text = dateAndTimeView.getText().toString();
         text = text.substring(text.indexOf(',') + 2);
         text = text.substring(0, text.indexOf(' '));
@@ -108,12 +111,14 @@ public class InfoViewsCollection {
     }
 
     public int getAMPM() {
+        // Parses AM or PM
         String text = dateAndTimeView.getText().toString();
         text = text.substring(text.indexOf('M') - 1, text.indexOf('M') + 1);
         return text.equals("AM") ? Calendar.AM : Calendar.PM;
     }
 
     public int getStartHour() {
+        // Parses the starting hour
         String text = dateAndTimeView.getText().toString();
         text = text.substring(text.indexOf(':') - 1, text.indexOf(':'));
         int time =  Integer.parseInt(text);
@@ -126,6 +131,7 @@ public class InfoViewsCollection {
     }
 
     public int getEndHour() {
+        // Parses the ending hour
         String text = dateAndTimeView.getText().toString();
         text = text.substring(text.indexOf('–') + 2);
         text = text.substring(0, text.indexOf(':'));
@@ -140,6 +146,7 @@ public class InfoViewsCollection {
     }
 
     public int getStartMinute() {
+        // Parses the starting minute
         String text = dateAndTimeView.getText().toString();
         text = text.substring(text.indexOf(':') + 1);
         text = text.substring(0, 2);
@@ -147,6 +154,7 @@ public class InfoViewsCollection {
     }
 
     public int getEndMinute() {
+        // Parses the ending minute
         String text = dateAndTimeView.getText().toString();
         text = text.substring(text.indexOf(':') + 1);
         text = text.substring(text.indexOf(':') + 1);

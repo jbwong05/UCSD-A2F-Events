@@ -4,16 +4,24 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 public class EventViewCollection {
 
+    private ConstraintLayout constraintLayout;
     private ImageViewsCollection imageViewsCollection;
     private InfoViewsCollection infoViewsCollection;
 
-    public EventViewCollection(ImageView theImageView, TextView theMonthView, TextView theDayNumberView, TextView theNameView, TextView theLocationView, TextView theDateAndTimeView) {
+    public EventViewCollection(ConstraintLayout theConstraintLayout, ImageView theImageView, TextView theMonthView, TextView theDayNumberView, TextView theNameView, TextView theLocationView, TextView theDateAndTimeView) {
 
         // Creates collection objects for Views
+        constraintLayout = theConstraintLayout;
         imageViewsCollection = new ImageViewsCollection(theImageView, theMonthView, theDayNumberView);
         infoViewsCollection = new InfoViewsCollection(theNameView, theLocationView, theDateAndTimeView);
+    }
+
+    public ConstraintLayout getConstraintLayout() {
+        return constraintLayout;
     }
 
     public ImageViewsCollection getImageViewsCollection() {
