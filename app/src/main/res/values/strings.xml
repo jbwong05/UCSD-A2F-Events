@@ -5,6 +5,7 @@
     <string name="no_events">No Upcoming Events found :(</string>
     <string name="script_name">getUpcomingEvents</string>
     <string name="main_function">main</string>
+    <string name="event_description">eventDescription</string>
     <string name="event_image_link">eventImageLink</string>
     <string name="event_image_name">eventImageName</string>
     <string name="event_month">eventMonth</string>

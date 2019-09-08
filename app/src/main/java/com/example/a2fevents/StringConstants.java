@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 
 public class StringConstants {
+    public static String EVENT_DESCRIPTION;
     public static String EVENT_IMAGE_LINK;
     public static String EVENT_IMAGE_NAME;
     public static String EVENT_MONTH;
@@ -25,6 +26,7 @@ public class StringConstants {
         // Retrieves String constants from xml
         Resources resources = context.getResources();
 
+        EVENT_DESCRIPTION = resources.getString(R.string.event_description);
         EVENT_IMAGE_LINK = resources.getString(R.string.event_image_link);
         EVENT_IMAGE_NAME = resources.getString(R.string.event_image_name);
         EVENT_MONTH = resources.getString(R.string.event_month);

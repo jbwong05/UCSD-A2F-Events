@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 class Event:
-    def __init__(self, theImageLink, theImageName, theMonth, theDayNumber, theName, theLocation, theDateAndTime):
+    def __init__(self, theImageLink, theImageName, theMonth, theDayNumber, theName, theLocation, theDateAndTime, theDescription):
         self.eventImageLink = theImageLink
         self.eventImageName = theImageName
         self.eventMonth = theMonth
@@ -10,6 +10,7 @@ class Event:
         self.eventName = theName
         self.eventLocation = theLocation
         self.eventDateAndTime = theDateAndTime
+        self.eventDescription = theDescription
 
 def setup():
     # Gets HTML from A2F website
@@ -87,7 +88,23 @@ def stripDateAndTime(dates, times):
 def main():
     # Setup HTML Parser
     soup = setup()
-    
+    events = []
+
+    # Checks for save the date events
+    saveTheDate = soup.find_all('div', attrs={'id': 'savethedate-page'})
+    if len(saveTheDate) > 0:
+        saveTheDate = saveTheDate[0].contents[1].contents[1].contents[0].contents[0].contents
+        saveTheDateTitle = saveTheDate[0].text.strip()
+        saveTheDate = saveTheDate[1].contents
+        saveTheDateImage = saveTheDate[0].contents[0].contents[0].contents[1].contents[1].contents[1].contents[1].contents[0]
+        saveTheDateImageLink = saveTheDateImage['src']
+        saveTheDateImageName = saveTheDateImage['alt']
+        saveTheDateInfo = saveTheDate[1].contents[0].contents[0].contents
+        saveTheDateDescription = saveTheDateInfo[0].text
+        saveTheDateDate = saveTheDateInfo[1].text
+        saveTheDateLocation = saveTheDateInfo[2].text
+        events.append(Event(saveTheDateImageLink, saveTheDateImageName, '', '', saveTheDateTitle, saveTheDateLocation, saveTheDateDate, saveTheDateDescription))
+
     # Get Information
     eventNames = soup.find_all('a', attrs={'class': 'summary-title-link'})
     eventNames = stripEventNames(eventNames)
@@ -115,12 +132,11 @@ def main():
         datesAndTimes = stripDateAndTime(dates, times)
 
         # Constructs list of upcoming events
-        events = []
         for i in range(len(eventNames)):
-            events.append(Event(images[i], imageNames[i], months[i], dayNumbers[i], eventNames[i], locations[i], datesAndTimes[i]))
+            events.append(Event(images[i], imageNames[i], months[i], dayNumbers[i], eventNames[i], locations[i], datesAndTimes[i], ''))
 
         return events
 
     else:
         # Return empty list if no events found
-        return []
+        return events

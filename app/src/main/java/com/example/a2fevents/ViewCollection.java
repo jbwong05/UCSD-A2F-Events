@@ -3,21 +3,30 @@ package com.example.a2fevents;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.constraintlayout.widget.ConstraintLayout;
+import java.util.ArrayList;
+import java.util.List;
 
-public class EventViewCollection {
+public class ViewCollection {
 
     private ConstraintLayout constraintLayout;
     private ImageViewsCollection imageViewsCollection;
     private InfoViewsCollection infoViewsCollection;
 
-    public EventViewCollection(ConstraintLayout theConstraintLayout, ImageView theImageView, TextView theMonthView, TextView theDayNumberView, TextView theNameView, TextView theLocationView, TextView theDateAndTimeView) {
+    public ViewCollection(ConstraintLayout theConstraintLayout, ImageView theImageView, TextView theMonthView, TextView theDayNumberView, TextView theNameView, TextView theLocationView, TextView theDateAndTimeView) {
 
         // Creates collection objects for Views
         constraintLayout = theConstraintLayout;
         imageViewsCollection = new ImageViewsCollection(theImageView, theMonthView, theDayNumberView);
-        infoViewsCollection = new InfoViewsCollection(theNameView, theLocationView, theDateAndTimeView);
+        infoViewsCollection = new EventViewsCollection(theNameView, theLocationView, theDateAndTimeView);
+    }
+
+    public ViewCollection(ConstraintLayout theConstraintLayout, ImageView theImageView, TextView theNameView, TextView theLocationView, TextView theDateAndTimeView, TextView theDescriptionView) {
+
+        // Creates collection objects for Views
+        constraintLayout = theConstraintLayout;
+        imageViewsCollection = new ImageViewsCollection(theImageView);
+        infoViewsCollection = new SaveTheDateViewsCollection(theNameView, theLocationView, theDateAndTimeView, theDescriptionView);
     }
 
     public ConstraintLayout getConstraintLayout() {
@@ -28,15 +37,22 @@ public class EventViewCollection {
         return imageViewsCollection;
     }
 
+    public List<View> getViewsList() {
+        List<View> viewList = new ArrayList<>();
+        viewList.addAll(imageViewsCollection.getViewsList());
+        viewList.addAll(infoViewsCollection.getViewList());
+        return viewList;
+    }
+
     public void setStatus(String status) {
         infoViewsCollection.setStatus(status);
     }
 
-    public void displayEvents(String imagePath, String month, String dayNumber, String name, String location, String dateAndTime) {
+    public void displayEvent(String imagePath, String month, String dayNumber, String name, String location, String dateAndTime, String description) {
 
         // Delegates to each collection
         imageViewsCollection.displayEvent(imagePath, month, dayNumber);
-        infoViewsCollection.displayEvent(name, location, dateAndTime);
+        infoViewsCollection.displayEvent(month, dayNumber, name, location, dateAndTime, description);
     }
 
     public boolean contains(View view) {
@@ -52,8 +68,8 @@ public class EventViewCollection {
         return infoViewsCollection.getName();
     }
 
-    public String getSecondLineInfo() {
-        return infoViewsCollection.getSecondLineInfo();
+    public String getDescription() {
+        return infoViewsCollection.getDescription();
     }
 
     public String getLocation() {

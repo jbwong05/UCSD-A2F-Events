@@ -1,6 +1,8 @@
 package com.example.a2fevents;
 
 import android.os.AsyncTask;
+import android.view.View;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import java.io.BufferedInputStream;
@@ -14,12 +16,14 @@ import java.util.List;
 
 public class EventRetriever extends AsyncTask<Void, Integer, Boolean> {
 
+    private static final int HAS_SAVE_THE_DATE = 1;
+    private static final int DOES_NOT_HAVE_SAVE_THE_DATE = 0;
     private static final long IMAGE_SIZE = 90000;
     private File folder;
-    private EventViewCollection[] eventViews;
+    private ViewCollection[] eventViews;
     private List<PyObject> events;
 
-    public EventRetriever(File theFolder, EventViewCollection[] theEventViews) {
+    public EventRetriever(File theFolder, ViewCollection[] theEventViews) {
         folder = theFolder;
         eventViews = theEventViews;
     }
@@ -30,8 +34,19 @@ public class EventRetriever extends AsyncTask<Void, Integer, Boolean> {
         // Gets list upcoming events
         events = getEvents();
 
+        int hasSaveTheDate = DOES_NOT_HAVE_SAVE_THE_DATE;
+
+        // Checks if save the date events found
+        if(events.size() > 0) {
+
+            PyObject eventDescription =  events.get(0).get(StringConstants.EVENT_DESCRIPTION);
+            if(eventDescription != null) {
+                hasSaveTheDate = eventDescription.toString().equals("") ? DOES_NOT_HAVE_SAVE_THE_DATE : HAS_SAVE_THE_DATE;
+            }
+        }
+
         // Publishes the amount of events retrieved
-        publishProgress(events.size());
+        publishProgress(hasSaveTheDate, events.size());
 
         // Checks if events found
         if(events.size() > 0) {
@@ -53,9 +68,30 @@ public class EventRetriever extends AsyncTask<Void, Integer, Boolean> {
 
     @Override
     protected void onProgressUpdate(Integer... numEvents) {
-        // Removes extra views
-        for(int i = 2; i > numEvents[0] - 1; i--) {
-            eventViews[i].getConstraintLayout().removeViews( 6 *i, 6);
+
+        // Checks if save the date views need to be removed
+        if(numEvents[0] == DOES_NOT_HAVE_SAVE_THE_DATE) {
+
+            // Removes all save the date views
+            removeViews(eventViews[0].getConstraintLayout(), eventViews[0].getViewsList());
+
+            numEvents[1]--;
+        }
+
+        // Removes extra event views
+        for(int i = eventViews.length - 1; i > numEvents[1] - 1; i--) {
+            removeViews(eventViews[i].getConstraintLayout(), eventViews[i].getViewsList());
+        }
+    }
+
+    private void removeViews(ConstraintLayout constraintLayout, List<View> viewList) {
+
+        // Removes vies from layout
+        for(int i = 0; i < viewList.size(); i++) {
+
+            if(viewList.get(i) != null) {
+                constraintLayout.removeView(viewList.get(i));
+            }
         }
     }
 
@@ -169,6 +205,7 @@ public class EventRetriever extends AsyncTask<Void, Integer, Boolean> {
         PyObject eventName;
         PyObject eventLocation;
         PyObject eventDateAndTime;
+        PyObject eventDescription;
 
         // Loops through the retrieved events and updates the corresponding TextViews
         for(int i = 0; i < events.size(); i++) {
@@ -180,10 +217,11 @@ public class EventRetriever extends AsyncTask<Void, Integer, Boolean> {
             eventName = event.get(StringConstants.EVENT_NAME);
             eventLocation = event.get(StringConstants.EVENT_LOCATION);
             eventDateAndTime = event.get(StringConstants.EVENT_DATE_AND_TIME);
+            eventDescription = event.get(StringConstants.EVENT_DESCRIPTION);
 
             // null check
-            if(eventImageName != null && eventMonth != null && eventDayNumber != null && eventName != null && eventLocation != null && eventDateAndTime != null) {
-                eventViews[i].displayEvents(getFullImagePath(destination, eventImageName.toString()), eventMonth.toString(), eventDayNumber.toString(), eventName.toString(), eventLocation.toString(), eventDateAndTime.toString());
+            if(eventImageName != null && eventMonth != null && eventDayNumber != null && eventName != null && eventLocation != null && eventDateAndTime != null && eventDescription != null) {
+                eventViews[i].displayEvent(getFullImagePath(destination, eventImageName.toString()), eventMonth.toString(), eventDayNumber.toString(), eventName.toString(), eventLocation.toString(), eventDateAndTime.toString(), eventDescription.toString());
             }
         }
     }

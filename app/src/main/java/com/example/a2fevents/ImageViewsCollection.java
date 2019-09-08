@@ -4,8 +4,9 @@ import android.graphics.BitmapFactory;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImageViewsCollection {
 
@@ -17,6 +18,12 @@ public class ImageViewsCollection {
         imageView = theImageView;
         monthView = theMonthView;
         dayNumberView = theDayNumberView;
+    }
+
+    public ImageViewsCollection(ImageView theImageView) {
+        imageView = theImageView;
+        monthView = null;
+        dayNumberView = null;
     }
 
     public ImageView getImageView() {
@@ -31,6 +38,14 @@ public class ImageViewsCollection {
         return dayNumberView;
     }
 
+    public List<View> getViewsList() {
+        List<android.view.View> viewList = new ArrayList<>();
+        viewList.add(imageView);
+        viewList.add(monthView);
+        viewList.add(dayNumberView);
+        return viewList;
+    }
+
     public void displayEvent(String imagePath, String month, String dayNumber) {
 
         // Displays the image if it exists
@@ -40,12 +55,20 @@ public class ImageViewsCollection {
         }
 
         // Updates the text of the TextViews
-        monthView.setText(month);
-        dayNumberView.setText(dayNumber);
+        if(monthView != null && dayNumberView != null) {
+            monthView.setText(month);
+            dayNumberView.setText(dayNumber);
+        }
     }
 
     public boolean contains(View view) {
         int currentId = view.getId();
-        return imageView.getId() == currentId || monthView.getId() == currentId || dayNumberView.getId() == currentId;
+
+        // Checks if only imageView being used
+        if(monthView == null && dayNumberView == null) {
+            return imageView.getId() == currentId;
+        } else {
+            return imageView.getId() == currentId || monthView.getId() == currentId || dayNumberView.getId() == currentId;
+        }
     }
 }

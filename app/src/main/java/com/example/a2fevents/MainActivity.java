@@ -15,11 +15,12 @@ public class MainActivity extends AppCompatActivity {
     private static final int FIRST = 0;
     private static final int SECOND = 1;
     private static final int THIRD = 2;
-    private static final int MAX_NUM_EVENTS = 3;
+    private static final int FOURTH = 3;
+    private static final int MAX_NUM_EVENTS = 4;
 
     private ImageDrawnReceiver imageDrawnReceiver;
     private EventRetriever retriever;
-    private EventViewCollection[] eventViews;
+    private ViewCollection[] eventViews;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,13 +66,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void registerImageDrawnReceiver(EventViewCollection[] eventViews) {
+    private void registerImageDrawnReceiver(ViewCollection[] eventViews) {
 
         // Creates sparse array linking ImageView id to the corresponding event collection
         SparseArray<ImageViewsCollection> sparseArray = new SparseArray<>();
-        sparseArray.append(R.id.firstEventImage, eventViews[FIRST].getImageViewsCollection());
-        sparseArray.append(R.id.secondEventImage, eventViews[SECOND].getImageViewsCollection());
-        sparseArray.append(R.id.thirdEventImage, eventViews[THIRD].getImageViewsCollection());
+        sparseArray.append(R.id.firstEventImage, eventViews[SECOND].getImageViewsCollection());
+        sparseArray.append(R.id.secondEventImage, eventViews[THIRD].getImageViewsCollection());
+        sparseArray.append(R.id.thirdEventImage, eventViews[FOURTH].getImageViewsCollection());
 
         // Registers broadcast receiver
         imageDrawnReceiver = new ImageDrawnReceiver(sparseArray);
@@ -80,26 +81,31 @@ public class MainActivity extends AppCompatActivity {
         this.registerReceiver(imageDrawnReceiver, intentFilter);
     }
 
-    private EventViewCollection[] setupEventViewCollection() {
+    private ViewCollection[] setupEventViewCollection() {
 
         // Sets up the EventViewCollection array
-        EventViewCollection[] toReturn = new EventViewCollection[MAX_NUM_EVENTS];
+        ViewCollection[] toReturn = new ViewCollection[MAX_NUM_EVENTS];
 
         ConstraintLayout constraintLayout = findViewById(R.id.internalConstraintLayout);
 
-        toReturn[FIRST] = new EventViewCollection(constraintLayout, (ProportionalImageView) findViewById(R.id.firstEventImage),
+        toReturn[FIRST] = new ViewCollection(constraintLayout, (ProportionalImageView) findViewById(R.id.saveTheDateImage),
+                (TextView) findViewById(R.id.saveTheDateName),
+                (TextView) findViewById(R.id.saveTheDateLocation),
+                (TextView) findViewById(R.id.saveTheDateDate),
+                (TextView) findViewById(R.id.saveTheDateDescription));
+        toReturn[SECOND] = new ViewCollection(constraintLayout, (ProportionalImageView) findViewById(R.id.firstEventImage),
                 (TextView) findViewById(R.id.firstEventMonth),
                 (TextView) findViewById(R.id.firstEventDayNumber),
                 (TextView) findViewById(R.id.firstEventName),
                 (TextView) findViewById(R.id.firstEventLocation),
                 (TextView) findViewById(R.id.firstEventDateAndTime));
-        toReturn[SECOND] = new EventViewCollection(constraintLayout, (ProportionalImageView) findViewById(R.id.secondEventImage),
+        toReturn[THIRD] = new ViewCollection(constraintLayout, (ProportionalImageView) findViewById(R.id.secondEventImage),
                 (TextView) findViewById(R.id.secondEventMonth),
                 (TextView) findViewById(R.id.secondEventDayNumber),
                 (TextView) findViewById(R.id.secondEventName),
                 (TextView) findViewById(R.id.secondEventLocation),
                 (TextView) findViewById(R.id.secondEventDateAndTime));
-        toReturn[THIRD] = new EventViewCollection(constraintLayout, (ProportionalImageView) findViewById(R.id.thirdEventImage),
+        toReturn[FOURTH] = new ViewCollection(constraintLayout, (ProportionalImageView) findViewById(R.id.thirdEventImage),
                 (TextView) findViewById(R.id.thirdEventMonth),
                 (TextView) findViewById(R.id.thirdEventDayNumber),
                 (TextView) findViewById(R.id.thirdEventName),

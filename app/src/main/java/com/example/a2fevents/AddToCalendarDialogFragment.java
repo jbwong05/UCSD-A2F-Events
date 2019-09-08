@@ -11,9 +11,9 @@ import java.util.Calendar;
 
 public class AddToCalendarDialogFragment extends DialogFragment {
 
-    private EventViewCollection eventViewCollection;
+    private ViewCollection eventViewCollection;
 
-    public AddToCalendarDialogFragment(EventViewCollection theEventViewCollection) {
+    public AddToCalendarDialogFragment(ViewCollection theEventViewCollection) {
         eventViewCollection = theEventViewCollection;
     }
 
@@ -46,7 +46,7 @@ public class AddToCalendarDialogFragment extends DialogFragment {
         intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, getStartTime());
         intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, getEndTime());
         intent.putExtra(CalendarContract.Events.TITLE, eventViewCollection.getName());
-        intent.putExtra(CalendarContract.Events.DESCRIPTION, eventViewCollection.getSecondLineInfo());
+        intent.putExtra(CalendarContract.Events.DESCRIPTION, eventViewCollection.getDescription());
         intent.putExtra(CalendarContract.Events.EVENT_LOCATION, eventViewCollection.getLocation());
 
         // Start calendar activity
