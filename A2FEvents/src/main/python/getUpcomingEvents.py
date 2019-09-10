@@ -2,30 +2,22 @@ import requests
 from bs4 import BeautifulSoup
 
 class Event:
-    def __init__(self, theImageLink, theImageName, theMonth, theDayNumber, theName, theLocation, theDateAndTime, theDescription):
+    def __init__(self, theImageLink, theImageName, theMonth, theDayNumber, theName, theDescription, theTime, theLocation, theDateAndTime):
         self.eventImageLink = theImageLink
         self.eventImageName = theImageName
         self.eventMonth = theMonth
         self.eventDayNumber = theDayNumber
         self.eventName = theName
+        self.eventDescription = theDescription
+        self.eventTime = theTime
         self.eventLocation = theLocation
         self.eventDateAndTime = theDateAndTime
-        self.eventDescription = theDescription
 
 def setup():
     # Gets HTML from A2F website
     webpage = 'http://www.ucsda2f.org/'
     request = requests.get(webpage)
     return BeautifulSoup(request.text, 'html.parser')
-
-def stripEventNames(eventNames):
-    # Strips text from event tags
-    strippedEvents = []
-
-    for event in eventNames:
-        strippedEvents.append(event.text)
-
-    return strippedEvents
 
 def stripImageLinks(images):
     # Strips links to event images
@@ -64,31 +56,30 @@ def stripDayNumbers(dayNumbers):
 
     return strippedDayNumbers
 
-def stripLocations(locations):
-    # Strips text from location tags
-    strippedLocations = []
+def removeReturns(listToRemove):
+    # Removes '\n' from list
+    newList = []
 
-    for location in locations:
-        strippedLocations.append(location.p.strong.text)
+    for item in listToRemove:
+        if item != '\n':
+            newList.append(item)
 
-    return strippedLocations
+    return newList
 
-def stripDateAndTime(dates, times):
-    # Strips and combines dates and times
-    strippedDatesAndTimes = []
-
+def getIndex(key, listToSearch):
     index = 0
-    upper = len(dates)
-    while index < upper:
-        strippedDatesAndTimes.append(dates[index].text + " " + times[index].text)
-        index += 3
 
-    return strippedDatesAndTimes
+    while index < len(listToSearch):
+        if listToSearch[index] == key:
+            return index + 1
+
+        index = index + 1
+    return str(-1)
 
 def main():
     # Setup HTML Parser
     soup = setup()
-    events = []
+    eventList = []
 
     # Checks for save the date events
     saveTheDate = soup.find_all('div', attrs={'id': 'savethedate-page'})
@@ -103,14 +94,13 @@ def main():
         saveTheDateDescription = saveTheDateInfo[0].text
         saveTheDateDate = saveTheDateInfo[1].text
         saveTheDateLocation = saveTheDateInfo[2].text
-        events.append(Event(saveTheDateImageLink, saveTheDateImageName, '', '', saveTheDateTitle, saveTheDateLocation, saveTheDateDate, saveTheDateDescription))
+        eventList.append(Event(saveTheDateImageLink, saveTheDateImageName, '', '', saveTheDateTitle, saveTheDateDescription, saveTheDateDate, saveTheDateLocation, ''))
 
     # Get Information
-    eventNames = soup.find_all('a', attrs={'class': 'summary-title-link'})
-    eventNames = stripEventNames(eventNames)
+    events = soup.find_all('div', attrs={'class': 'summary-content sqs-gallery-meta-container'})
 
     # Checks if events found
-    if len(eventNames) > 0:
+    if len(events) > 0:
 
         images = soup.find_all('img', attrs={'class': 'summary-thumbnail-image'})
         images = stripImageLinks(images)
@@ -124,19 +114,42 @@ def main():
         dayNumbers = soup.find_all('span', attrs={'class': 'summary-thumbnail-event-date-day'})
         dayNumbers = stripDayNumbers(dayNumbers)
 
-        locations = soup.find_all('div', attrs={'class': 'summary-excerpt'})
-        locations = stripLocations(locations)
+        for i in range(len(events)):
+            contents = removeReturns(events[i].contents)
 
-        dates = soup.find_all('time', attrs={'class': 'summary-metadata-item summary-metadata-item--date'})
-        times = soup.find_all('span', attrs={'class': 'event-time-12hr'})
-        datesAndTimes = stripDateAndTime(dates, times)
+            # Retrieves the title
+            titleTag = contents[getIndex(' Title ', contents)]
+            title = titleTag.a.text
 
-        # Constructs list of upcoming events
-        for i in range(len(eventNames)):
-            events.append(Event(images[i], imageNames[i], months[i], dayNumbers[i], eventNames[i], locations[i], datesAndTimes[i], ''))
+            # Retrieves the excerpt tag
+            excerptTag = contents[getIndex(' Excerpt ', contents)]
+            excerptList = removeReturns(excerptTag.contents)
 
-        return events
+            description = ''
+
+            # Checks for description
+            if len(excerptList) > 2:
+                # Extracts the description
+                description = excerptList[0].text
+                excerptList.remove(excerptList[0])
+
+            # Extracts the time and location
+            time = excerptList[0].text
+            location = excerptList[1].text
+
+            # Extracts the date and time
+            dateAndTimeTag = contents[getIndex(' Metadata (Below Content) ', contents)]
+            primaryDateTag = removeReturns(dateAndTimeTag.contents)[0]
+            primaryDate = primaryDateTag.time.text
+            secondaryTimeTag = removeReturns(dateAndTimeTag.contents)[1]
+            secondaryTime = secondaryTimeTag.time.contents[0].text
+            dateAndTime = primaryDate + ' ' + secondaryTime
+
+            # Adds the event
+            eventList.append(Event(images[i], imageNames[i], months[i], dayNumbers[i], title, description, time, location, dateAndTime))
+
+        return eventList
 
     else:
         # Return empty list if no events found
-        return events
+        return eventList

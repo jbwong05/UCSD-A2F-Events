@@ -34,17 +34,19 @@ public class EventRetriever extends AsyncTask<Void, Integer, Boolean> {
         // Gets list upcoming events
         events = getEvents();
 
+        // TODO Fix hasSaveTheDate check
         int hasSaveTheDate = DOES_NOT_HAVE_SAVE_THE_DATE;
 
         // Checks if save the date events found
         if(events.size() > 0) {
 
-            PyObject eventDescription =  events.get(0).get(StringConstants.EVENT_DESCRIPTION);
-            if(eventDescription != null) {
-                hasSaveTheDate = eventDescription.toString().equals("") ? DOES_NOT_HAVE_SAVE_THE_DATE : HAS_SAVE_THE_DATE;
+            PyObject eventName =  events.get(0).get(StringConstants.EVENT_NAME);
+            if(eventName != null) {
+                hasSaveTheDate = eventName.toString().equals(StringConstants.SAVE_THE_DATE_NAME) ? DOES_NOT_HAVE_SAVE_THE_DATE : HAS_SAVE_THE_DATE;
             }
         }
 
+        // TODO Fix view removal for variable number of events
         // Publishes the amount of events retrieved
         publishProgress(hasSaveTheDate, events.size());
 
@@ -78,10 +80,11 @@ public class EventRetriever extends AsyncTask<Void, Integer, Boolean> {
             numEvents[1]--;
         }
 
+        // TODO Fix view removal for variable number of events
         // Removes extra event views
-        for(int i = eventViews.length - 1; i > numEvents[1] - 1; i--) {
+        /*for(int i = eventViews.length - 1; i > numEvents[1] - 1; i--) {
             removeViews(eventViews[i].getConstraintLayout(), eventViews[i].getViewsList());
-        }
+        }*/
     }
 
     private void removeViews(ConstraintLayout constraintLayout, List<View> viewList) {
@@ -153,7 +156,7 @@ public class EventRetriever extends AsyncTask<Void, Integer, Boolean> {
     private void downloadImages(FilesToDownload files) {
         // Downloads images in a background thread
         int count;
-        Image[] images = files.getImages();
+        List<Image> images = files.getImages();
 
         try {
 
@@ -161,7 +164,7 @@ public class EventRetriever extends AsyncTask<Void, Integer, Boolean> {
             for(int i = 0; i < files.getNumImages(); i++) {
 
                 // Connect to the url
-                URL url = new URL(images[i].getLink());
+                URL url = new URL(images.get(i).getLink());
                 URLConnection connection = url.openConnection();
                 connection.connect();
 
@@ -169,7 +172,7 @@ public class EventRetriever extends AsyncTask<Void, Integer, Boolean> {
                 InputStream input = new BufferedInputStream(url.openStream(), 8192);
 
                 // Output stream
-                OutputStream output = new FileOutputStream(getFullImagePath(files.getDestination(), images[i].getName()));
+                OutputStream output = new FileOutputStream(getFullImagePath(files.getDestination(), images.get(i).getName()));
 
                 byte[] data = new byte[1024];
 
@@ -208,7 +211,8 @@ public class EventRetriever extends AsyncTask<Void, Integer, Boolean> {
         PyObject eventDescription;
 
         // Loops through the retrieved events and updates the corresponding TextViews
-        for(int i = 0; i < events.size(); i++) {
+        // TODO Fix IndexOutOfBoundsException for variable number of events
+        for(int i = 0; i < events.size() && i < 4; i++) {
 
             event = events.get(i);
             eventImageName = event.get(StringConstants.EVENT_IMAGE_NAME);
