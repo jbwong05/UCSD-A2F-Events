@@ -5,28 +5,26 @@
 
     <TextView
         android:id="@+id/eventMonth"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:background="@color/white"
         android:fontFamily="@font/raleway"
-        android:gravity="center"
-        android:onClick="addToCalendar"
+        android:gravity="center|center_horizontal"
         android:textColor="@color/month_and_day_number"
         android:textSize="18sp" />
 
     <TextView
         android:id="@+id/eventDayNumber"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:background="@color/white"
         android:fontFamily="@font/raleway"
         android:gravity="center"
-        android:onClick="addToCalendar"
         android:textColor="@color/month_and_day_number"
         android:textSize="33sp" />
 

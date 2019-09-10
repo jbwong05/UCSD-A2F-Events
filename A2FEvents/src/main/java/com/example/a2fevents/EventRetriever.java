@@ -57,6 +57,14 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
         // Checks if events found
         if(events.size() > 0) {
 
+            // Download required images
+            FilesToDownload files = determineImagesForDownload(events);
+
+            // Downloads images
+            if(files.hasImagesToDownload() && folder.getFreeSpace() > (files.getNumImages() * IMAGE_SIZE)) {
+                downloadImages(files);
+            }
+
             // Removes the status view
             publishProgress(REMOVE_STATUS_VIEW, context, linearLayout, null);
 
@@ -71,14 +79,6 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
             // Adds the remaining events
             for(int i = 0; i < numEvents; i++) {
                 publishProgress(ADD_VIEW, context, linearLayout, EVENT);
-            }
-
-            // Download required images
-            FilesToDownload files = determineImagesForDownload(events);
-
-            // Starts async task to download images
-            if(files.hasImagesToDownload() && folder.getFreeSpace() > (files.getNumImages() * IMAGE_SIZE)) {
-                downloadImages(files);
             }
 
             toReturn[0] = true;

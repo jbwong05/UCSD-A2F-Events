@@ -16,7 +16,6 @@ public class StringConstants {
     public static String SAVE_THE_DATE_NAME;
     public static String IMAGE_PREFIX;
     public static String IMAGE_EXTENSION;
-    public static String IMAGE_DRAWN_RECEIVER_INTENT;
     public static String FOLDER_NAME;
     public static String NO_EVENTS;
     public static String SCRIPT_NAME;
@@ -40,7 +39,6 @@ public class StringConstants {
         SAVE_THE_DATE_NAME = resources.getString(R.string.save_the_date_name);
         IMAGE_PREFIX = resources.getString(R.string.image_prefix);
         IMAGE_EXTENSION = resources.getString(R.string.image_extension);
-        IMAGE_DRAWN_RECEIVER_INTENT = resources.getString(R.string.image_drawn_receiver_intent);
         FOLDER_NAME = resources.getString(R.string.folder_name);
         NO_EVENTS = resources.getString(R.string.no_events);
         SCRIPT_NAME = resources.getString(R.string.script_name);

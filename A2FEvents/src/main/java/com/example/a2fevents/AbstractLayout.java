@@ -15,6 +15,10 @@ public abstract class AbstractLayout extends ConstraintLayout {
     private TextView descriptionView;
     private TextView timeView;
     private TextView locationView;
+    protected String nameText;
+    protected String descriptionText;
+    protected String timeText;
+    protected String locationText;
 
     public AbstractLayout(Context context) {
         super(context);
@@ -48,6 +52,19 @@ public abstract class AbstractLayout extends ConstraintLayout {
         descriptionView.setText(description);
         timeView.setText(time);
         locationView.setText(location);
+
+        nameText = name;
+        descriptionText = description;
+        timeText = time;
+        locationText = location;
+    }
+
+    protected void setupOnClickListener(View.OnClickListener listener) {
+        imageView.setOnClickListener(listener);
+        nameView.setOnClickListener(listener);
+        descriptionView.setOnClickListener(listener);
+        timeView.setOnClickListener(listener);
+        locationView.setOnClickListener(listener);
     }
 
     public void addToCalendar(View view) {
