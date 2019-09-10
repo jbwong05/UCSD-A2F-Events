@@ -11,10 +11,8 @@ import java.util.Calendar;
 
 public class AddToCalendarDialogFragment extends DialogFragment {
 
-    private ViewCollection eventViewCollection;
+    public AddToCalendarDialogFragment() {
 
-    public AddToCalendarDialogFragment(ViewCollection theEventViewCollection) {
-        eventViewCollection = theEventViewCollection;
     }
 
     @Override
@@ -40,7 +38,7 @@ public class AddToCalendarDialogFragment extends DialogFragment {
     private void addToCalendar() {
 
         // Setup intent
-        Intent intent = new Intent(Intent.ACTION_INSERT);
+        /*Intent intent = new Intent(Intent.ACTION_INSERT);
         intent.setType(StringConstants.CALENDAR_INTENT_TYPE);
 
         intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, getStartTime());
@@ -50,20 +48,20 @@ public class AddToCalendarDialogFragment extends DialogFragment {
         intent.putExtra(CalendarContract.Events.EVENT_LOCATION, eventViewCollection.getLocation());
 
         // Start calendar activity
-        startActivity(intent);
+        startActivity(intent);*/
     }
 
     private long getStartTime() {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
-        calendar.set(eventViewCollection.getYear(), eventViewCollection.getMonth(), eventViewCollection.getDayNumber(), eventViewCollection.getStartHour(), eventViewCollection.getStartMinute());
+        //calendar.set(eventViewCollection.getYear(), eventViewCollection.getMonth(), eventViewCollection.getDayNumber(), eventViewCollection.getStartHour(), eventViewCollection.getStartMinute());
         return calendar.getTimeInMillis();
     }
 
     private long getEndTime() {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
-        calendar.set(eventViewCollection.getYear(), eventViewCollection.getMonth(), eventViewCollection.getDayNumber(), eventViewCollection.getEndHour(), eventViewCollection.getEndMinute());
+        //calendar.set(eventViewCollection.getYear(), eventViewCollection.getMonth(), eventViewCollection.getDayNumber(), eventViewCollection.getEndHour(), eventViewCollection.getEndMinute());
         return calendar.getTimeInMillis();
     }
 }

@@ -1,8 +1,9 @@
 package com.example.a2fevents;
 
+import android.content.Context;
 import android.os.AsyncTask;
-import android.view.View;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import java.io.BufferedInputStream;
@@ -14,44 +15,63 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
-public class EventRetriever extends AsyncTask<Void, Integer, Boolean> {
+public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
 
     private static final int HAS_SAVE_THE_DATE = 1;
     private static final int DOES_NOT_HAVE_SAVE_THE_DATE = 0;
+    private static final int EVENT = 2;
+    private static final int SAVE_THE_DATE = 3;
+    private static final int ADD_VIEW = 4;
+    private static final int REMOVE_STATUS_VIEW = 5;
     private static final long IMAGE_SIZE = 90000;
+    private int hasSaveTheDate;
     private File folder;
-    private ViewCollection[] eventViews;
     private List<PyObject> events;
 
-    public EventRetriever(File theFolder, ViewCollection[] theEventViews) {
+    public EventRetriever(File theFolder) {
         folder = theFolder;
-        eventViews = theEventViews;
+        hasSaveTheDate = DOES_NOT_HAVE_SAVE_THE_DATE;
     }
 
     @Override
-    protected Boolean doInBackground(Void... params) {
+    protected Object[] doInBackground(Object... params) {
+
+        // Get parameters
+        Context context = (Context) params[0];
+        LinearLayout linearLayout = (LinearLayout) params[1];
 
         // Gets list upcoming events
         events = getEvents();
-
-        // TODO Fix hasSaveTheDate check
-        int hasSaveTheDate = DOES_NOT_HAVE_SAVE_THE_DATE;
 
         // Checks if save the date events found
         if(events.size() > 0) {
 
             PyObject eventName =  events.get(0).get(StringConstants.EVENT_NAME);
             if(eventName != null) {
-                hasSaveTheDate = eventName.toString().equals(StringConstants.SAVE_THE_DATE_NAME) ? DOES_NOT_HAVE_SAVE_THE_DATE : HAS_SAVE_THE_DATE;
+                hasSaveTheDate = eventName.toString().equals(StringConstants.SAVE_THE_DATE_NAME) ?  HAS_SAVE_THE_DATE : DOES_NOT_HAVE_SAVE_THE_DATE;
             }
         }
 
-        // TODO Fix view removal for variable number of events
-        // Publishes the amount of events retrieved
-        publishProgress(hasSaveTheDate, events.size());
+        Object[] toReturn = new Object[3];
 
         // Checks if events found
         if(events.size() > 0) {
+
+            // Removes the status view
+            publishProgress(REMOVE_STATUS_VIEW, context, linearLayout, null);
+
+            int numEvents = events.size();
+
+            // Adds SaveTheDate View if necessary
+            if(hasSaveTheDate == HAS_SAVE_THE_DATE) {
+                publishProgress(ADD_VIEW, context, linearLayout, SAVE_THE_DATE);
+                numEvents--;
+            }
+
+            // Adds the remaining events
+            for(int i = 0; i < numEvents; i++) {
+                publishProgress(ADD_VIEW, context, linearLayout, EVENT);
+            }
 
             // Download required images
             FilesToDownload files = determineImagesForDownload(events);
@@ -61,53 +81,50 @@ public class EventRetriever extends AsyncTask<Void, Integer, Boolean> {
                 downloadImages(files);
             }
 
-            return true;
+            toReturn[0] = true;
+            toReturn[1] = linearLayout;
+            toReturn[2] = context;
+            return toReturn;
 
         } else {
-            return false;
+            toReturn[0] = false;
+            return toReturn;
         }
     }
 
     @Override
-    protected void onProgressUpdate(Integer... numEvents) {
+    protected void onProgressUpdate(Object... params) {
+        Context context = (Context) params[1];
+        LinearLayout linearLayout = (LinearLayout) params[2];
 
-        // Checks if save the date views need to be removed
-        if(numEvents[0] == DOES_NOT_HAVE_SAVE_THE_DATE) {
+        if((Integer) params[0] == ADD_VIEW) {
 
-            // Removes all save the date views
-            removeViews(eventViews[0].getConstraintLayout(), eventViews[0].getViewsList());
+            if((Integer) params[3] == EVENT) {
+                linearLayout.addView(new EventLayout(context));
 
-            numEvents[1]--;
-        }
-
-        // TODO Fix view removal for variable number of events
-        // Removes extra event views
-        /*for(int i = eventViews.length - 1; i > numEvents[1] - 1; i--) {
-            removeViews(eventViews[i].getConstraintLayout(), eventViews[i].getViewsList());
-        }*/
-    }
-
-    private void removeViews(ConstraintLayout constraintLayout, List<View> viewList) {
-
-        // Removes vies from layout
-        for(int i = 0; i < viewList.size(); i++) {
-
-            if(viewList.get(i) != null) {
-                constraintLayout.removeView(viewList.get(i));
+            } else if((Integer) params[3] == SAVE_THE_DATE) {
+                linearLayout.addView(new SaveTheDateLayout(context));
             }
+
+        } else if((Integer) params[0] == REMOVE_STATUS_VIEW) {
+            linearLayout.removeAllViews();
         }
     }
 
     @Override
-    protected void onPostExecute(Boolean eventsFound) {
+    protected void onPostExecute(Object[] results) {
 
-        if(eventsFound) {
+        if((Boolean) results[0]) {
+
+            // Register ImageDrawnReceiver
+            //registerImageDrawnReceiver((Context) results[2], (LinearLayout) results[1]);
+
             // Display events after images downloaded
-            displayEvents(events, folder.getAbsolutePath());
+            displayEvents(events, folder.getAbsolutePath(), (LinearLayout) results[1]);
 
         } else {
             // Otherwise display no events found message
-            eventViews[0].setStatus(StringConstants.NO_EVENTS);
+            setStatus((LinearLayout) results[1]);
         }
     }
 
@@ -200,37 +217,43 @@ public class EventRetriever extends AsyncTask<Void, Integer, Boolean> {
         }
     }
 
-    private void displayEvents(List<PyObject> events, String destination) {
+    private void displayEvents(List<PyObject> events, String destination, LinearLayout linearLayout) {
         PyObject event;
         PyObject eventImageName;
         PyObject eventMonth;
         PyObject eventDayNumber;
         PyObject eventName;
+        PyObject eventDescription;
+        PyObject eventTime;
         PyObject eventLocation;
         PyObject eventDateAndTime;
-        PyObject eventDescription;
 
         // Loops through the retrieved events and updates the corresponding TextViews
         // TODO Fix IndexOutOfBoundsException for variable number of events
-        for(int i = 0; i < events.size() && i < 4; i++) {
+        for(int i = 0; i < linearLayout.getChildCount(); i++) {
 
             event = events.get(i);
             eventImageName = event.get(StringConstants.EVENT_IMAGE_NAME);
             eventMonth = event.get(StringConstants.EVENT_MONTH);
             eventDayNumber = event.get(StringConstants.EVENT_DAY_NUMBER);
             eventName = event.get(StringConstants.EVENT_NAME);
+            eventDescription = event.get(StringConstants.EVENT_DESCRIPTION);
+            eventTime = event.get(StringConstants.EVENT_TIME);
             eventLocation = event.get(StringConstants.EVENT_LOCATION);
             eventDateAndTime = event.get(StringConstants.EVENT_DATE_AND_TIME);
-            eventDescription = event.get(StringConstants.EVENT_DESCRIPTION);
 
             // null check
-            if(eventImageName != null && eventMonth != null && eventDayNumber != null && eventName != null && eventLocation != null && eventDateAndTime != null && eventDescription != null) {
-                eventViews[i].displayEvent(getFullImagePath(destination, eventImageName.toString()), eventMonth.toString(), eventDayNumber.toString(), eventName.toString(), eventLocation.toString(), eventDateAndTime.toString(), eventDescription.toString());
+            if(eventImageName != null && eventMonth != null && eventDayNumber != null && eventName != null && eventDescription != null && eventTime != null && eventLocation != null && eventDateAndTime != null) {
+                ((AbstractLayout) linearLayout.getChildAt(i)).displayEvent(getFullImagePath(destination, eventImageName.toString()), eventMonth.toString(), eventDayNumber.toString(), eventName.toString(), eventDescription.toString(), eventTime.toString(), eventLocation.toString(), eventDateAndTime.toString());
             }
         }
     }
 
-    private static String getFullImagePath(String path, String imageName) {
+    private String getFullImagePath(String path, String imageName) {
         return path + "/" + StringConstants.IMAGE_PREFIX + imageName.hashCode() + StringConstants.IMAGE_EXTENSION;
+    }
+
+    private void setStatus(LinearLayout linearLayout) {
+        ((TextView)linearLayout.getChildAt(0)).setText(StringConstants.NO_EVENTS);
     }
 }

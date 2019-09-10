@@ -10,343 +10,35 @@
         android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="8dp"
         android:background="@color/white"
+        android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/internalConstraintLayout"
+
+        <LinearLayout
+            android:id="@+id/internalLinearLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/saveTheDateName"
-                android:layout_width="wrap_content"
+                android:id="@+id/retrieving"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:fontFamily="@font/raleway_bold"
-                android:onClick="addToCalendar"
+                android:gravity="center_horizontal"
                 android:text="@string/retrieving"
-                android:textColor="@color/event_name"
+                android:textColor="@color/black"
                 android:textSize="24sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/saveTheDateImage"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:textStyle="bold" />
 
-            <com.example.a2fevents.ProportionalImageView
-                android:id="@+id/saveTheDateImage"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_marginBottom="8dp"
-                android:onClick="addToCalendar"
-                android:scaleType="fitCenter"
-                app:layout_constraintBottom_toTopOf="@+id/saveTheDateDescription"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/saveTheDateName"
-                app:srcCompat="@android:color/transparent" />
+        </LinearLayout>
 
-            <TextView
-                android:id="@+id/saveTheDateDescription"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/raleway"
-                android:gravity="center"
-                android:onClick="addToCalendar"
-                android:textColor="@color/location"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/saveTheDateImage" />
-
-            <TextView
-                android:id="@+id/saveTheDateDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/raleway"
-                android:onClick="addToCalendar"
-                android:textColor="@color/location"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/saveTheDateDescription" />
-
-            <TextView
-                android:id="@+id/saveTheDateLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/raleway"
-                android:onClick="addToCalendar"
-                android:textColor="@color/location"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/saveTheDateDate" />
-
-            <com.example.a2fevents.ProportionalImageView
-                android:id="@+id/firstEventImage"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="16dp"
-                android:onClick="addToCalendar"
-                android:scaleType="fitCenter"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/saveTheDateLocation"
-                app:srcCompat="@android:color/transparent" />
-
-            <TextView
-                android:id="@+id/firstEventMonth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:background="@color/white"
-                android:fontFamily="@font/raleway"
-                android:gravity="center"
-                android:textColor="@color/month_and_day_number"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="@+id/firstEventImage"
-                app:layout_constraintTop_toTopOf="@+id/firstEventImage"/>
-
-            <TextView
-                android:id="@+id/firstEventDayNumber"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:background="@color/white"
-                android:fontFamily="@font/raleway"
-                android:gravity="center"
-                android:textColor="@color/month_and_day_number"
-                android:textSize="33sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/firstEventMonth" />
-
-            <TextView
-                android:id="@+id/firstEventName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/raleway"
-                android:onClick="addToCalendar"
-                android:textColor="@color/event_name"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/firstEventImage" />
-
-            <TextView
-                android:id="@+id/firstEventLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/raleway_bold"
-                android:onClick="addToCalendar"
-                android:textColor="@color/location"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/firstEventName" />
-
-            <TextView
-                android:id="@+id/firstEventDateAndTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/raleway"
-                android:onClick="addToCalendar"
-                android:textColor="@color/date_and_time"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/firstEventLocation" />
-
-            <com.example.a2fevents.ProportionalImageView
-                android:id="@+id/secondEventImage"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="8dp"
-                android:onClick="addToCalendar"
-                android:scaleType="fitCenter"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/firstEventDateAndTime"
-                app:srcCompat="@android:color/transparent" />
-
-            <TextView
-                android:id="@+id/secondEventMonth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:background="@color/white"
-                android:fontFamily="@font/raleway"
-                android:gravity="center"
-                android:textColor="@color/month_and_day_number"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="@+id/secondEventImage"
-                app:layout_constraintTop_toTopOf="@+id/secondEventImage" />
-
-            <TextView
-                android:id="@+id/secondEventDayNumber"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:background="@color/white"
-                android:fontFamily="@font/raleway"
-                android:gravity="center"
-                android:textColor="@color/month_and_day_number"
-                android:textSize="33sp"
-                app:layout_constraintEnd_toEndOf="@+id/secondEventImage"
-                app:layout_constraintTop_toBottomOf="@+id/secondEventMonth" />
-
-            <TextView
-                android:id="@+id/secondEventName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/raleway"
-                android:onClick="addToCalendar"
-                android:textColor="@color/event_name"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/secondEventImage" />
-
-            <TextView
-                android:id="@+id/secondEventLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/raleway_bold"
-                android:onClick="addToCalendar"
-                android:textColor="@color/location"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/secondEventName" />
-
-            <TextView
-                android:id="@+id/secondEventDateAndTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/raleway"
-                android:onClick="addToCalendar"
-                android:textColor="@color/date_and_time"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/secondEventLocation" />
-
-            <com.example.a2fevents.ProportionalImageView
-                android:id="@+id/thirdEventImage"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:onClick="addToCalendar"
-                android:scaleType="fitCenter"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/secondEventDateAndTime"
-                app:srcCompat="@android:color/transparent" />
-
-            <TextView
-                android:id="@+id/thirdEventMonth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="12dp"
-                android:background="@color/white"
-                android:fontFamily="@font/raleway"
-                android:gravity="center"
-                android:textColor="@color/month_and_day_number"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="@+id/thirdEventImage"
-                app:layout_constraintTop_toTopOf="@+id/thirdEventImage" />
-
-            <TextView
-                android:id="@+id/thirdEventDayNumber"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:background="@color/white"
-                android:fontFamily="@font/raleway"
-                android:gravity="center"
-                android:textColor="@color/month_and_day_number"
-                android:textSize="33sp"
-                app:layout_constraintEnd_toEndOf="@+id/thirdEventImage"
-                app:layout_constraintTop_toBottomOf="@+id/thirdEventMonth" />
-
-            <TextView
-                android:id="@+id/thirdEventName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/raleway"
-                android:onClick="addToCalendar"
-                android:textColor="@color/event_name"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/thirdEventImage" />
-
-            <TextView
-                android:id="@+id/thirdEventLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/raleway_bold"
-                android:onClick="addToCalendar"
-                android:textColor="@color/location"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/thirdEventName" />
-
-            <TextView
-                android:id="@+id/thirdEventDateAndTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/raleway"
-                android:onClick="addToCalendar"
-                android:textColor="@color/date_and_time"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/thirdEventLocation" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
