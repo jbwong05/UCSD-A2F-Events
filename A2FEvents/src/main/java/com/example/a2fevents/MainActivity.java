@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -87,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private void setupViews() {
+            // Gets a reference to eac view
             super.setupViews((ProportionalImageView) findViewById(R.id.eventImage),
                     (TextView) findViewById(R.id.eventName),
                     (TextView) findViewById(R.id.eventDescription),
@@ -98,11 +98,13 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean hasView(View view) {
+            // Determines if the current layout has the given view
             return super.hasView(view) || monthDayNumberLayout.hasView(view) || dateAndTimeView.getId() == view.getId();
         }
 
         @Override
         public void displayEvent(String imagePath, String month, String dayNumber, String name, String description, String time, String location, String dateAndTime) {
+            // Updates the layout with the given event information
             super.displayEvent(imagePath, month, dayNumber, name, description, time, location, dateAndTime);
             monthDayNumberLayout.displayEvent(month, dayNumber);
             dateAndTimeView.setText(dateAndTime);
@@ -111,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Calendar getStartTime() {
+            // Retrieves a Calendar object representing the starting time
             Calendar calendar = Calendar.getInstance();
             calendar.clear();
             calendar.set(getStartYear(), getStartMonth(), getStartDayNumber(), getStartHour(), getStartMinute(), 0);
@@ -119,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Calendar getEndTime() {
+            // Retrieves a Calendar object representing the ending time
             Calendar calendar = Calendar.getInstance();
             calendar.clear();
             calendar.set(getEndYear(), getEndMonth(), getEndDayNumber(), getEndHour(), getEndMinute(), 0);
@@ -134,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getEndYear() {
+            // Calculates ending year based on the starting year
             if(getStartMonth() == Calendar.DECEMBER && getStartDayNumber() == 31 && getEndAMPM() == Calendar.AM) {
                 return getStartYear() + 1;
             } else {
@@ -147,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getEndMonth() {
+            // Calculates the ending month based on the day numbers
             if(getEndDayNumber() < getStartDayNumber()) {
                 int newMonth = getStartMonth() + 1;
                 return newMonth > Calendar.DECEMBER ? Calendar.JANUARY : newMonth;
@@ -163,9 +169,11 @@ public class MainActivity extends AppCompatActivity {
             Calendar current = Calendar.getInstance();
             Calendar now = new GregorianCalendar(current.get(Calendar.YEAR), current.get(Calendar.MONTH), current.get(Calendar.DAY_OF_MONTH));
 
+            // Checks if end time is next day
             if(getStartAMPM() == Calendar.PM && getEndAMPM() == Calendar.AM) {
                 int dayNumber = (getStartDayNumber() + 1) % (now.getActualMaximum(Calendar.DAY_OF_MONTH) + 1);
                 return dayNumber == 0 ? 1 : dayNumber;
+
             } else {
                 return getStartDayNumber();
             }
@@ -175,16 +183,14 @@ public class MainActivity extends AppCompatActivity {
             // Assumes timeText format of WHEN: 6:30 PM
             String text = timeText.substring(timeText.indexOf(':') + 2);
             text = text.substring(0, text.indexOf(':'));
-            int toReturn = CalendarUtilities.adjustTime(Integer.parseInt(text), getStartAMPM());
-            return toReturn;
+            return CalendarUtilities.adjustTime(Integer.parseInt(text), getStartAMPM());
         }
 
         private int getEndHour() {
             // Assumes dateAndTimeText format of SEP 13, 2019 6:30 PM – 11:00 PM
             String text = dateAndTimeText.substring(dateAndTimeText.indexOf('–') + 2);
             text = text.substring(0, text.indexOf(':'));
-            int toReturn = CalendarUtilities.adjustTime(Integer.parseInt(text), getEndAMPM());
-            return toReturn;
+            return CalendarUtilities.adjustTime(Integer.parseInt(text), getEndAMPM());
         }
 
         private int getStartMinute() {
@@ -215,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         protected void setupOnClickListener() {
+            // Sets up the onClickListener for all Views
             super.setupOnClickListener(this);
             monthDayNumberLayout.setOnClickListener(this);
             dateAndTimeView.setOnClickListener(this);
@@ -222,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
+            // Add to calendar prompt
             addToCalendar(this);
         }
     }
@@ -253,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private void setupViews() {
+            // Retrieves references for each View
             super.setupViews((ProportionalImageView) findViewById(R.id.saveTheDateImage),
                     (TextView) findViewById(R.id.saveTheDateName),
                     (TextView) findViewById(R.id.saveTheDateDescription),
@@ -261,12 +270,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void displayEvent(String imagePath, String month, String dayNumber, String name, String description, String time, String locatiaon, String dateAndTime) {
-            super.displayEvent(imagePath, month, dayNumber, name, description, time, locatiaon, dateAndTime);
+        public void displayEvent(String imagePath, String month, String dayNumber, String name, String description, String time, String location, String dateAndTime) {
+            // Delegates to parent method to update layout with event information
+            super.displayEvent(imagePath, month, dayNumber, name, description, time, location, dateAndTime);
         }
 
         @Override
         public Calendar getStartTime() {
+            // Retrieves a Calendar object representing the starting time
             Calendar calendar = Calendar.getInstance();
             calendar.clear();
             calendar.set(getStartYear(), getStartMonth(), getStartDayNumber(), getStartHour(), getStartMinute(), 0);
@@ -275,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Calendar getEndTime() {
+            // Retrieves a Calendar object representing the ending time
             Calendar calendar = Calendar.getInstance();
             calendar.clear();
             calendar.set(getEndYear(), getEndMonth(), getEndDayNumber(), getEndHour(), getEndMinute(), 0);
@@ -288,6 +300,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getEndYear() {
+            // Calculates the ending year
             if(getStartMonth() == Calendar.DECEMBER && getStartDayNumber() == 31 && getEndAMPM() == Calendar.AM) {
                 return getStartYear() + 1;
             } else {
@@ -303,9 +316,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getEndMonth() {
+            // Calculates the ending month based on the day numbers
             if(getEndDayNumber() < getStartDayNumber()) {
                 int newMonth = getStartMonth() + 1;
                 return newMonth > Calendar.DECEMBER ? Calendar.JANUARY : newMonth;
+
             } else {
                 return getStartMonth();
             }
@@ -323,9 +338,11 @@ public class MainActivity extends AppCompatActivity {
             Calendar current = Calendar.getInstance();
             Calendar now = new GregorianCalendar(current.get(Calendar.YEAR), current.get(Calendar.MONTH), current.get(Calendar.DAY_OF_MONTH));
 
+            // Calculates the ending day number based on if the ending time is during the next day
             if(getStartAMPM() == Calendar.PM && getEndAMPM() == Calendar.AM) {
                 int dayNumber = (getStartDayNumber() + 1) % (now.getActualMaximum(Calendar.DAY_OF_MONTH) + 1);
                 return dayNumber == 0 ? 1 : dayNumber;
+
             } else {
                 return getStartDayNumber();
             }
@@ -339,6 +356,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getEndHour() {
+            // Calculates the ending hour
             int endHour = (getStartHour() + 1) % 25;
             return endHour == 0 ? 1 : endHour;
         }
@@ -362,10 +380,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getEndAMPM() {
+            // Determines the time of day for the ending time
             return getEndHour() < getStartHour() ? Calendar.AM : getStartAMPM();
         }
 
         protected void setupOnClickListener() {
+            // Delegates to parent method to set up onClickListener for each View
             super.setupOnClickListener(this);
         }
 

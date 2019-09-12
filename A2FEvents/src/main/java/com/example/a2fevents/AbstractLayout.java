@@ -49,6 +49,7 @@ public abstract class AbstractLayout extends ConstraintLayout {
             imageView.setImageBitmap(BitmapFactory.decodeFile(imagePath));
         }
 
+        // Sets and stores text of TextViews
         nameView.setText(name);
         descriptionView.setText(description);
         timeView.setText(time);
@@ -61,6 +62,7 @@ public abstract class AbstractLayout extends ConstraintLayout {
     }
 
     protected void setupOnClickListener(View.OnClickListener listener) {
+        // Sets up onClickListener
         imageView.setOnClickListener(listener);
         nameView.setOnClickListener(listener);
         descriptionView.setOnClickListener(listener);
@@ -82,6 +84,7 @@ public abstract class AbstractLayout extends ConstraintLayout {
     }
 
     public boolean hasView(View view) {
+        // Determines if this layout contains the given view
         int currentId = view.getId();
         return imageView.getId() == currentId || nameView.getId() == currentId || descriptionView.getId() == currentId || timeView.getId() == currentId || locationView.getId() == currentId;
     }

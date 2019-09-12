@@ -33,6 +33,12 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
         hasSaveTheDate = DOES_NOT_HAVE_SAVE_THE_DATE;
     }
 
+    /*
+     * Expected parameter array:
+     * params[0]: Reference to the main activity
+     * params[1]: The context
+     * params[2]: The outer linear layout container for each dynamically added event layout
+     */
     @Override
     protected Object[] doInBackground(Object... params) {
 
@@ -53,6 +59,7 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
             }
         }
 
+        // Array of data to be sent to onPostExecute
         Object[] toReturn = new Object[3];
 
         // Checks if events found
@@ -84,7 +91,6 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
 
             toReturn[0] = true;
             toReturn[1] = linearLayout;
-            toReturn[2] = context;
             return toReturn;
 
         } else {
@@ -93,33 +99,49 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
         }
     }
 
+    /*
+     * Expected parameter array
+     * params[0]: Action to be performed; either ADD_VIEW or REMOVE_STATUS_VIEW
+     * params[1]: Reference to the main activity
+     * params[2]: The context
+     * params[3]: The internal linear layout container which holds the dynamically added event layouts
+     * params[4]: The type of layout to add; either EVENT or SAVE_THE_DATE
+     */
     @Override
     protected void onProgressUpdate(Object... params) {
+
+        // Extracts parameters
         MainActivity mainActivity = (MainActivity) params[1];
         Context context = (Context) params[2];
         LinearLayout linearLayout = (LinearLayout) params[3];
 
+        // Determines action
         if((Integer) params[0] == ADD_VIEW) {
 
+            // Checks if event layout is to be added
             if((Integer) params[4] == EVENT) {
                 linearLayout.addView(mainActivity.new EventLayout(context));
 
+                // Otherwise add save the date layout
             } else if((Integer) params[4] == SAVE_THE_DATE) {
                 linearLayout.addView(mainActivity.new SaveTheDateLayout(context));
             }
 
+            // Removes the status TextView
         } else if((Integer) params[0] == REMOVE_STATUS_VIEW) {
             linearLayout.removeAllViews();
         }
     }
 
+    /*
+     * Expected parameter array:
+     * results[0]: Boolean representing if events were found
+     * results[1]: internal linear layout container
+     */
     @Override
     protected void onPostExecute(Object[] results) {
 
         if((Boolean) results[0]) {
-
-            // Register ImageDrawnReceiver
-            //registerImageDrawnReceiver((Context) results[2], (LinearLayout) results[1]);
 
             // Display events after images downloaded
             displayEvents(events, folder.getAbsolutePath(), (LinearLayout) results[1]);
@@ -230,8 +252,7 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
         PyObject eventLocation;
         PyObject eventDateAndTime;
 
-        // Loops through the retrieved events and updates the corresponding TextViews
-        // TODO Fix IndexOutOfBoundsException for variable number of events
+        // Loops through the added events and updates each event layout
         for(int i = 0; i < linearLayout.getChildCount(); i++) {
 
             event = events.get(i);
@@ -252,10 +273,12 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
     }
 
     private String getFullImagePath(String path, String imageName) {
+        // Retrieves the full image path
         return path + "/" + StringConstants.IMAGE_PREFIX + imageName.hashCode() + StringConstants.IMAGE_EXTENSION;
     }
 
     private void setStatus(LinearLayout linearLayout) {
+        // Changes the status of the initial status TextView
         ((TextView)linearLayout.getChildAt(0)).setText(StringConstants.NO_EVENTS);
     }
 }

@@ -43,6 +43,7 @@ public class MonthDayNumberLayout extends LinearLayout {
     }
 
     private void setupViews() {
+        // Retrieves references to each View
         monthView = findViewById(R.id.eventMonth);
         dayNumberView = findViewById(R.id.eventDayNumber);
     }
@@ -67,6 +68,7 @@ public class MonthDayNumberLayout extends LinearLayout {
     }
 
     public void displayEvent(String month, String dayNumber) {
+        // Updates Views with event information
         monthView.setText(month);
         dayNumberView.setText(dayNumber);
         monthText = month;
@@ -74,6 +76,7 @@ public class MonthDayNumberLayout extends LinearLayout {
     }
 
     public boolean hasView(View view) {
+        // Determines if this layout contains the given View
         return monthView.getId() == view.getId() || dayNumberView.getId() == view.getId();
     }
 
