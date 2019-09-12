@@ -24,4 +24,9 @@ public class Image {
         // Determines equality using image file names
         return (obj instanceof Image) && this.name.equals(((Image) obj).getName());
     }
+
+    public static String getFullImagePath(String path, String imageName) {
+        // Retrieves the full image path
+        return path + "/" + StringConstants.IMAGE_PREFIX + imageName.hashCode() + StringConstants.IMAGE_EXTENSION;
+    }
 }

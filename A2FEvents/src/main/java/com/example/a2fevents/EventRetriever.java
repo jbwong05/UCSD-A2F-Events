@@ -6,14 +6,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
 
@@ -24,6 +21,7 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
     private static final int ADD_VIEW = 4;
     private static final int REMOVE_STATUS_VIEW = 5;
     private static final long IMAGE_SIZE = 90000;
+    private static int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
     private int hasSaveTheDate;
     private File folder;
     private List<PyObject> events;
@@ -182,7 +180,7 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
 
                 // Determine which images have already been downloaded
                 currentImage = new Image(pythonImageName.toString(), pythonLink.toString());
-                currentFile = new File(getFullImagePath(folder.getAbsolutePath(), currentImage.getName()));
+                currentFile = new File(Image.getFullImagePath(folder.getAbsolutePath(), currentImage.getName()));
 
                 // Checks if file already exists or is already scheduled for download
                 if(!currentFile.exists() && !files.hasImage(currentImage)) {
@@ -194,49 +192,18 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
         return files;
     }
 
-    private void downloadImages(FilesToDownload files) {
-        // Downloads images in a background thread
-        int count;
-        List<Image> images = files.getImages();
+    private void downloadImages(FilesToDownload filesToDownload) {
+        ExecutorService taskExecutor = Executors.newFixedThreadPool(NUMBER_OF_CORES);
+
+        for(int i = 0; i < filesToDownload.getNumImages(); i++) {
+            taskExecutor.execute(new ImageDownloader(filesToDownload.getImages().get(i), filesToDownload.getDestination()));
+        }
+
+        taskExecutor.shutdown();
 
         try {
-
-            // Loops through all links
-            for(int i = 0; i < files.getNumImages(); i++) {
-
-                // Connect to the url
-                URL url = new URL(images.get(i).getLink());
-                URLConnection connection = url.openConnection();
-                connection.connect();
-
-                // Download the file
-                InputStream input = new BufferedInputStream(url.openStream(), 8192);
-
-                // Output stream
-                OutputStream output = new FileOutputStream(getFullImagePath(files.getDestination(), images.get(i).getName()));
-
-                byte[] data = new byte[1024];
-
-                long total = 0;
-
-                // While there are still bytes to write
-                while ((count = input.read(data)) != -1) {
-                    total += count;
-
-                    // Writing data to file
-                    output.write(data, 0, count);
-                }
-
-                // Flushing output
-                output.flush();
-
-                // Closing streams
-                output.close();
-                input.close();
-
-            }
-
-        } catch (Exception e) {
+            taskExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -267,14 +234,9 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
 
             // null check
             if(eventImageName != null && eventMonth != null && eventDayNumber != null && eventName != null && eventDescription != null && eventTime != null && eventLocation != null && eventDateAndTime != null) {
-                ((AbstractLayout) linearLayout.getChildAt(i)).displayEvent(getFullImagePath(destination, eventImageName.toString()), eventMonth.toString(), eventDayNumber.toString(), eventName.toString(), eventDescription.toString(), eventTime.toString(), eventLocation.toString(), eventDateAndTime.toString());
+                ((AbstractLayout) linearLayout.getChildAt(i)).displayEvent(Image.getFullImagePath(destination, eventImageName.toString()), eventMonth.toString(), eventDayNumber.toString(), eventName.toString(), eventDescription.toString(), eventTime.toString(), eventLocation.toString(), eventDateAndTime.toString());
             }
         }
-    }
-
-    private String getFullImagePath(String path, String imageName) {
-        // Retrieves the full image path
-        return path + "/" + StringConstants.IMAGE_PREFIX + imageName.hashCode() + StringConstants.IMAGE_EXTENSION;
     }
 
     private void setStatus(LinearLayout linearLayout) {
