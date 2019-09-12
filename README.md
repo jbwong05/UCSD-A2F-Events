@@ -6,3 +6,6 @@ While the activity components are modified using Java, all of the web scraping a
 
 # Project Status
 Extensive testing has not yet been performed, but the application is currently functional on the Samsung Galaxy S4 running Android 5.0.1, the Pixel 3 running Android 9.0, and the Pixel 3 running Android 10.0.
+
+# Note
+The app will take longer to display events upon the very first run due to the need to download images in the background. Every subsequent run following the very first one often will likely not suffer from this issue unless several images are needed to be downloaded due to event update or addition. Faster download methods to reduce waiting and lag time are being explored.
