@@ -3,10 +3,10 @@ package com.example.a2fevents;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.annotation.Nullable;
 
 public class MonthDayNumberLayout extends LinearLayout {
@@ -71,5 +71,17 @@ public class MonthDayNumberLayout extends LinearLayout {
         dayNumberView.setText(dayNumber);
         monthText = month;
         dayNumberText = dayNumber;
+    }
+
+    public boolean hasView(View view) {
+        return monthView.getId() == view.getId() || dayNumberView.getId() == view.getId();
+    }
+
+    public String getMonthText() {
+        return monthText;
+    }
+
+    public String getDayNumberText() {
+        return dayNumberText;
     }
 }

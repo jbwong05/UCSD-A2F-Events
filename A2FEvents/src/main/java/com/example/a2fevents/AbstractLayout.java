@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import java.io.File;
+import java.util.Calendar;
 
 public abstract class AbstractLayout extends ConstraintLayout {
 
@@ -15,10 +16,10 @@ public abstract class AbstractLayout extends ConstraintLayout {
     private TextView descriptionView;
     private TextView timeView;
     private TextView locationView;
-    protected String nameText;
-    protected String descriptionText;
+    private String nameText;
+    private String descriptionText;
     protected String timeText;
-    protected String locationText;
+    private String locationText;
 
     public AbstractLayout(Context context) {
         super(context);
@@ -67,20 +68,24 @@ public abstract class AbstractLayout extends ConstraintLayout {
         locationView.setOnClickListener(listener);
     }
 
-    public void addToCalendar(View view) {
-
-        // Determine which View collection the view is apart of
-        /*int index = 0;
-        boolean found = false;
-        while(index < MAX_NUM_EVENTS && !found) {
-
-            //found = eventViews[index].contains(view);
-            index = found ? index : index + 1;
-        }
-
-        if(index < MAX_NUM_EVENTS && !eventViews[index].isEmpty()) {
-            // Prompt for calendar addition
-            new AddToCalendarDialogFragment(eventViews[index]).show(getSupportFragmentManager(), StringConstants.CALENDAR_PROMPT_TAG);
-        }*/
+    public String getName() {
+        return nameText;
     }
+
+    public String getDescription() {
+        return descriptionText;
+    }
+
+    public String getLocation() {
+        // Assumes locationText format of WHERE: QUALCOMM ROOM (in Warren)
+        return locationText.substring(locationText.indexOf(':') + 2);
+    }
+
+    public boolean hasView(View view) {
+        int currentId = view.getId();
+        return imageView.getId() == currentId || nameView.getId() == currentId || descriptionView.getId() == currentId || timeView.getId() == currentId || locationView.getId() == currentId;
+    }
+
+    public abstract Calendar getStartTime();
+    public abstract Calendar getEndTime();
 }

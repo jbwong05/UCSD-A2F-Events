@@ -7,12 +7,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import androidx.fragment.app.DialogFragment;
-import java.util.Calendar;
 
 public class AddToCalendarDialogFragment extends DialogFragment {
 
-    public AddToCalendarDialogFragment() {
+    private AbstractLayout layout;
 
+    public AddToCalendarDialogFragment(AbstractLayout theLayout) {
+        layout = theLayout;
     }
 
     @Override
@@ -38,30 +39,16 @@ public class AddToCalendarDialogFragment extends DialogFragment {
     private void addToCalendar() {
 
         // Setup intent
-        /*Intent intent = new Intent(Intent.ACTION_INSERT);
+        Intent intent = new Intent(Intent.ACTION_INSERT);
         intent.setType(StringConstants.CALENDAR_INTENT_TYPE);
 
-        intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, getStartTime());
-        intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, getEndTime());
-        intent.putExtra(CalendarContract.Events.TITLE, eventViewCollection.getName());
-        intent.putExtra(CalendarContract.Events.DESCRIPTION, eventViewCollection.getDescription());
-        intent.putExtra(CalendarContract.Events.EVENT_LOCATION, eventViewCollection.getLocation());
+        intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, layout.getStartTime().getTimeInMillis());
+        intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, layout.getEndTime().getTimeInMillis());
+        intent.putExtra(CalendarContract.Events.TITLE, layout.getName());
+        intent.putExtra(CalendarContract.Events.DESCRIPTION, layout.getDescription());
+        intent.putExtra(CalendarContract.Events.EVENT_LOCATION, layout.getLocation());
 
         // Start calendar activity
-        startActivity(intent);*/
-    }
-
-    private long getStartTime() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.clear();
-        //calendar.set(eventViewCollection.getYear(), eventViewCollection.getMonth(), eventViewCollection.getDayNumber(), eventViewCollection.getStartHour(), eventViewCollection.getStartMinute());
-        return calendar.getTimeInMillis();
-    }
-
-    private long getEndTime() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.clear();
-        //calendar.set(eventViewCollection.getYear(), eventViewCollection.getMonth(), eventViewCollection.getDayNumber(), eventViewCollection.getEndHour(), eventViewCollection.getEndMinute());
-        return calendar.getTimeInMillis();
+        startActivity(intent);
     }
 }

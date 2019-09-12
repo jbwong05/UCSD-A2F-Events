@@ -37,8 +37,9 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
     protected Object[] doInBackground(Object... params) {
 
         // Get parameters
-        Context context = (Context) params[0];
-        LinearLayout linearLayout = (LinearLayout) params[1];
+        MainActivity mainActivity = (MainActivity) params[0];
+        Context context = (Context) params[1];
+        LinearLayout linearLayout = (LinearLayout) params[2];
 
         // Gets list upcoming events
         events = getEvents();
@@ -66,19 +67,19 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
             }
 
             // Removes the status view
-            publishProgress(REMOVE_STATUS_VIEW, context, linearLayout, null);
+            publishProgress(REMOVE_STATUS_VIEW, mainActivity, context, linearLayout, null);
 
             int numEvents = events.size();
 
             // Adds SaveTheDate View if necessary
             if(hasSaveTheDate == HAS_SAVE_THE_DATE) {
-                publishProgress(ADD_VIEW, context, linearLayout, SAVE_THE_DATE);
+                publishProgress(ADD_VIEW, mainActivity, context, linearLayout, SAVE_THE_DATE);
                 numEvents--;
             }
 
             // Adds the remaining events
             for(int i = 0; i < numEvents; i++) {
-                publishProgress(ADD_VIEW, context, linearLayout, EVENT);
+                publishProgress(ADD_VIEW, mainActivity, context, linearLayout, EVENT);
             }
 
             toReturn[0] = true;
@@ -94,16 +95,17 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
 
     @Override
     protected void onProgressUpdate(Object... params) {
-        Context context = (Context) params[1];
-        LinearLayout linearLayout = (LinearLayout) params[2];
+        MainActivity mainActivity = (MainActivity) params[1];
+        Context context = (Context) params[2];
+        LinearLayout linearLayout = (LinearLayout) params[3];
 
         if((Integer) params[0] == ADD_VIEW) {
 
-            if((Integer) params[3] == EVENT) {
-                linearLayout.addView(new EventLayout(context));
+            if((Integer) params[4] == EVENT) {
+                linearLayout.addView(mainActivity.new EventLayout(context));
 
-            } else if((Integer) params[3] == SAVE_THE_DATE) {
-                linearLayout.addView(new SaveTheDateLayout(context));
+            } else if((Integer) params[4] == SAVE_THE_DATE) {
+                linearLayout.addView(mainActivity.new SaveTheDateLayout(context));
             }
 
         } else if((Integer) params[0] == REMOVE_STATUS_VIEW) {
