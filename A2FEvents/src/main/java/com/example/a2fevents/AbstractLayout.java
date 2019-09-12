@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import java.io.File;
 import java.util.Calendar;
 
@@ -59,6 +60,31 @@ public abstract class AbstractLayout extends ConstraintLayout {
         descriptionText = description;
         timeText = time;
         locationText = location;
+
+        // Handles if there is no description
+        if(description.equals("")) {
+            removeDescriptionView();
+        }
+    }
+
+    private void removeDescriptionView() {
+
+        // Retrieve the constraint set and clear timeView's top constraint
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone((ConstraintLayout) this.getChildAt(0));
+        constraintSet.clear(timeView.getId(), ConstraintSet.TOP);
+
+        // Re-Attaches timeView's top constraint
+        if(this.getClass().equals(MainActivity.EventLayout.class)) {
+            constraintSet.connect(timeView.getId(), ConstraintSet.TOP, nameView.getId(), ConstraintSet.BOTTOM, 0);
+
+        } else if(this.getClass().equals(MainActivity.SaveTheDateLayout.class)) {
+            constraintSet.connect(timeView.getId(), ConstraintSet.TOP, imageView.getId(), ConstraintSet.BOTTOM, 0);
+        }
+
+        // Removes the descriptionView and applies the new constraints
+        this.removeView(descriptionView);
+        constraintSet.applyTo((ConstraintLayout) this.getChildAt(0));
     }
 
     protected void setupOnClickListener(View.OnClickListener listener) {
