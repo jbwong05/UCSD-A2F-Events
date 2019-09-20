@@ -5,19 +5,15 @@ import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
-
 import com.chaquo.python.PyObject;
-
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-
-import static android.view.Gravity.CENTER_HORIZONTAL;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,9 +54,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void addToCalendar(AbstractLayout layout) {
+    private void addToCalendar(AbstractLayout layout) {
         // Add to calendar prompt
         new AddToCalendarDialogFragment(layout).show(getSupportFragmentManager(), StringConstants.CALENDAR_PROMPT_TAG);
+    }
+
+    private AbstractLayout findLayout(View view){
+
+        LinearLayout linearLayout = findViewById(R.id.internalLinearLayout);
+
+        boolean found = false;
+        int index;
+        for(index = 0; index < linearLayout.getChildCount() && !found; index++) {
+
+            found = ((AbstractLayout)linearLayout.getChildAt(index)).hasView(view);
+        }
+
+        index--;
+        return found ? (AbstractLayout)linearLayout.getChildAt(index) : null;
     }
 
     public class EventLayout extends AbstractLayout implements View.OnClickListener {
@@ -73,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             inflater.inflate(R.layout.event_layout, this);
             addInfoViews(context, mainActivity, numExcerpts);
             setupViews();
-            //setupOnClickListener();
+            setupOnClickListener();
         }
 
         public EventLayout(Context context) {
@@ -81,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
             LayoutInflater inflater = LayoutInflater.from(context);
             inflater.inflate(R.layout.event_layout, this);
             setupViews();
-            //setupOnClickListener();
+            setupOnClickListener();
         }
 
         public EventLayout(Context context, AttributeSet attrs) {
@@ -89,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
             LayoutInflater inflater = LayoutInflater.from(context);
             inflater.inflate(R.layout.event_layout, this);
             setupViews();
-            //setupOnClickListener();
+            setupOnClickListener();
         }
 
         public EventLayout(Context context, AttributeSet attrs, int defStyle) {
@@ -97,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
             LayoutInflater inflater = LayoutInflater.from(context);
             inflater.inflate(R.layout.event_layout, this);
             setupViews();
-            //setupOnClickListener();
+            setupOnClickListener();
         }
 
         private void setupViews() {
@@ -125,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
             // Retrieves a Calendar object representing the starting time
             Calendar calendar = Calendar.getInstance();
             calendar.clear();
-            //calendar.set(getStartYear(), getStartMonth(), getStartDayNumber(), getStartHour(), getStartMinute(), 0);
+            calendar.set(getStartYear(), getStartMonth(), getStartDayNumber(), getStartHour(), getStartMinute(), 0);
             return calendar;
         }
 
@@ -134,16 +145,17 @@ public class MainActivity extends AppCompatActivity {
             // Retrieves a Calendar object representing the ending time
             Calendar calendar = Calendar.getInstance();
             calendar.clear();
-            //calendar.set(getEndYear(), getEndMonth(), getEndDayNumber(), getEndHour(), getEndMinute(), 0);
+            calendar.set(getEndYear(), getEndMonth(), getEndDayNumber(), getEndHour(), getEndMinute(), 0);
             return calendar;
         }
 
-        /*private int getStartYear() {
-            // Assumes dateAndTimeText format of SEP 13, 2019 6:30 PM – 11:00 PM
-            // Parses the specific year
-            String text = dateAndTimeText.substring(dateAndTimeText.indexOf(',') + 2);
-            text = text.substring(0, text.indexOf(' '));
-            return Integer.parseInt(text);
+        private int getStartYear() {
+            Calendar now = Calendar.getInstance();
+            int year = now.get(Calendar.YEAR);
+            if(getEndMonth() < now.get(Calendar.MONTH)) {
+                year++;
+            }
+            return year;
         }
 
         private int getEndYear() {
@@ -171,7 +183,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getStartDayNumber() {
-            return Integer.parseInt(monthDayNumberLayout.getDayNumberText());
+            String text = monthDayNumberLayout.getDayNumberText();
+            return text.equals("") ? -1 : Integer.parseInt(text);
         }
 
         private int getEndDayNumber() {
@@ -189,56 +202,83 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getStartHour() {
-            // Assumes timeText format of WHEN: 6:30 PM
-            String text = timeText.substring(timeText.indexOf(':') + 2);
-            text = text.substring(0, text.indexOf(':'));
-            return CalendarUtilities.adjustTime(Integer.parseInt(text), getStartAMPM());
+
+            if(timeText == null) {
+                return -1;
+            } else {
+                String text = "";
+                if(timeText.contains("WHEN") || timeText.contains("When")) {
+
+                    text = timeText.substring(timeText.indexOf(':') + 2);
+
+                    if(text.contains(":")) {
+                        text = text.substring(0, text.indexOf(':'));
+                    } else {
+                        text = text.substring(0, text.indexOf(' '));
+                    }
+
+                } else if(text.matches("[0-9][aApP][mM]\\s[-]\\s.")) {
+                    text = timeText.substring(0, timeText.indexOf(' ') - 2);
+                }
+
+                return CalendarUtilities.adjustTime(Integer.parseInt(text), getStartAMPM());
+            }
         }
 
         private int getEndHour() {
-            // Assumes dateAndTimeText format of SEP 13, 2019 6:30 PM – 11:00 PM
-            String text = dateAndTimeText.substring(dateAndTimeText.indexOf('–') + 2);
-            text = text.substring(0, text.indexOf(':'));
-            return CalendarUtilities.adjustTime(Integer.parseInt(text), getEndAMPM());
+            return getEndHour(getStartHour());
         }
 
         private int getStartMinute() {
-            // Assumes timeText format of WHEN: 6:30 PM
-            String text = timeText.substring(timeText.indexOf(':') + 1);
-            text = text.substring(text.indexOf(':') + 1);
-            text = text.substring(0, text.indexOf(' '));
-            return Integer.parseInt(text);
+
+            if(timeText == null) {
+                return -1;
+            } else {
+                String text;
+
+                if(timeText.contains(":")) {
+                    text = timeText.substring(timeText.indexOf(':') + 1);
+
+                    if(text.contains(":")) {
+                        text = text.substring(text.indexOf(':') + 1);
+                        text = text.substring(0, text.indexOf(' '));
+                        return Integer.parseInt(text);
+                    }
+                }
+            }
+
+            return 0;
         }
 
         private int getEndMinute() {
-            // Assumes dateAndTimeText format of SEP 13, 2019 6:30 PM – 11:00 PM
-            String text = dateAndTimeText.substring(dateAndTimeText.indexOf('–'));
-            text = text.substring(text.indexOf(':') + 1);
-            text = text.substring(0, text.indexOf(' '));
-            return Integer.parseInt(text);
+            // Assume 1 hour
+            return getStartMinute();
         }
 
         private int getStartAMPM() {
             // Assumes timeText format of WHEN: 6:30 PM
-            return timeText.contains("AM") ? Calendar.AM : Calendar.PM;
+            if(timeText == null) {
+                return -1;
+            } else {
+                return timeText.contains("AM") ? Calendar.AM : Calendar.PM;
+            }
         }
 
         private int getEndAMPM() {
-            // Assumes dateAndTimeText format of SEP 13, 2019 6:30 PM – 11:00 PM
-            String text = dateAndTimeText.substring(dateAndTimeText.indexOf('–'));
-            return text.contains("AM") ? Calendar.AM : Calendar.PM;
+            // Determines the time of day for the ending time
+            return getEndHour() < getStartHour() ? Calendar.AM : getStartAMPM();
         }
 
         protected void setupOnClickListener() {
             // Sets up the onClickListener for all Views
             super.setupOnClickListener(this);
             monthDayNumberLayout.setOnClickListener(this);
-            dateAndTimeView.setOnClickListener(this);
-        }*/
+        }
 
         @Override
         public void onClick(View view) {
             // Add to calendar prompt
+            super.updateTexts(view);
             addToCalendar(this);
         }
     }
@@ -295,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
             // Retrieves a Calendar object representing the starting time
             Calendar calendar = Calendar.getInstance();
             calendar.clear();
-            //calendar.set(getStartYear(), getStartMonth(), getStartDayNumber(), getStartHour(), getStartMinute(), 0);
+            calendar.set(getStartYear(), getStartMonth(), getStartDayNumber(), getStartHour(), getStartMinute(), 0);
             return calendar;
         }
 
@@ -304,11 +344,11 @@ public class MainActivity extends AppCompatActivity {
             // Retrieves a Calendar object representing the ending time
             Calendar calendar = Calendar.getInstance();
             calendar.clear();
-            //calendar.set(getEndYear(), getEndMonth(), getEndDayNumber(), getEndHour(), getEndMinute(), 0);
+            calendar.set(getEndYear(), getEndMonth(), getEndDayNumber(), getEndHour(), getEndMinute(), 0);
             return calendar;
         }
 
-        /*private int getStartYear() {
+        private int getStartYear() {
             // Assumes this year
             Calendar now = Calendar.getInstance();
             return now.get(Calendar.YEAR);
@@ -324,10 +364,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getStartMonth() {
-            // Assumes timeText format of When: September 26 @ 6:00 PM
-            String text = timeText.substring(timeText.indexOf(':') + 2);
-            text = text.substring(0, text.indexOf(' '));
-            return CalendarUtilities.convertMonth(text);
+            if(timeText == null) {
+                return -1;
+            } else {
+                String text = timeText.substring(timeText.indexOf(':') + 2);
+                text = text.substring(0, text.indexOf(' '));
+                return CalendarUtilities.convertMonth(text);
+            }
         }
 
         private int getEndMonth() {
@@ -342,11 +385,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getStartDayNumber() {
-            // Assumes timeText format of When: September 26 @ 6:00 PM
-            String text = timeText.substring(timeText.indexOf(' ') + 1);
-            text = text.substring(text.indexOf(' ') + 1);
-            text = text.substring(0, text.indexOf(' '));
-            return Integer.parseInt(text);
+            if(timeText == null) {
+                return -1;
+            } else {
+                String text = timeText.substring(timeText.indexOf(' ') + 1);
+                text = text.substring(text.indexOf(' ') + 1);
+                text = text.substring(0, text.indexOf(' '));
+                return Integer.parseInt(text);
+            }
         }
 
         private int getEndDayNumber() {
@@ -364,24 +410,31 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getStartHour() {
-            // Assumes timeText format of When: September 26 @ 6:00 PM
-            String text = timeText.substring(timeText.indexOf('@') + 2);
-            text = text.substring(0, text.indexOf(':'));
-            return CalendarUtilities.adjustTime(Integer.parseInt(text), getStartAMPM());
+            if(timeText == null) {
+                return -1;
+            } else {
+                // Assumes timeText format of When: September 26 @ 6:00 PM
+                String text = timeText.substring(timeText.indexOf('@') + 2);
+                text = text.substring(0, text.indexOf(':'));
+                return CalendarUtilities.adjustTime(Integer.parseInt(text), getStartAMPM());
+            }
         }
 
         private int getEndHour() {
             // Calculates the ending hour
-            int endHour = (getStartHour() + 1) % 25;
-            return endHour == 0 ? 1 : endHour;
+            return super.getEndHour(getStartHour());
         }
 
         private int getStartMinute() {
-            // Assumes timeText format of When: September 26 @ 6:00 PM
-            String text = timeText.substring(timeText.indexOf(':') + 1);
-            text = text.substring(text.indexOf(':') + 1);
-            text = text.substring(0, text.indexOf(' '));
-            return Integer.parseInt(text);
+            if(timeText == null) {
+                return -1;
+            } else {
+                // Assumes timeText format of When: September 26 @ 6:00 PM
+                String text = timeText.substring(timeText.indexOf(':') + 1);
+                text = text.substring(text.indexOf(':') + 1);
+                text = text.substring(0, text.indexOf(' '));
+                return Integer.parseInt(text);
+            }
         }
 
         private int getEndMinute() {
@@ -390,14 +443,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getStartAMPM() {
-            // Assumes timeText format of When: September 26 @ 6:00 PM
-            return timeText.contains("AM") ? Calendar.AM : Calendar.PM;
+            if(timeText == null) {
+                return -1;
+            } else {
+                // Assumes timeText format of When: September 26 @ 6:00 PM
+                return timeText.contains("AM") ? Calendar.AM : Calendar.PM;
+            }
         }
 
         private int getEndAMPM() {
             // Determines the time of day for the ending time
             return getEndHour() < getStartHour() ? Calendar.AM : getStartAMPM();
-        }*/
+        }
 
         protected void setupOnClickListener() {
             // Delegates to parent method to set up onClickListener for each View
@@ -407,6 +464,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             // Add to calendar prompt
+            super.updateTexts(view);
             addToCalendar(this);
         }
     }
@@ -420,6 +478,8 @@ public class MainActivity extends AppCompatActivity {
             LayoutInflater inflater = LayoutInflater.from(context);
             inflater.inflate(R.layout.info_layout, this);
             textView = findViewById(R.id.infoText);
+            textView.setId((int) Calendar.getInstance().getTimeInMillis());
+            setupOnClickListener();
         }
 
         public InfoLayout(Context context, AttributeSet attrs) {
@@ -427,6 +487,8 @@ public class MainActivity extends AppCompatActivity {
             LayoutInflater inflater = LayoutInflater.from(context);
             inflater.inflate(R.layout.info_layout, this);
             textView = findViewById(R.id.infoText);
+            textView.setId((int) Calendar.getInstance().getTimeInMillis());
+            setupOnClickListener();
         }
 
         public InfoLayout(Context context, AttributeSet attrs, int defStyle) {
@@ -434,15 +496,34 @@ public class MainActivity extends AppCompatActivity {
             LayoutInflater inflater = LayoutInflater.from(context);
             inflater.inflate(R.layout.info_layout, this);
             textView = findViewById(R.id.infoText);
+            textView.setId((int) Calendar.getInstance().getTimeInMillis());
+            setupOnClickListener();
         }
 
         public void setText(String text) {
             textView.setText(text);
         }
 
+        public int getTextId() {
+            return textView.getId();
+        }
+
+        public String getText() {
+            return textView.getText().toString();
+        }
+
+        protected void setupOnClickListener() {
+            textView.setOnClickListener(this);
+        }
+
         @Override
         public void onClick(View view) {
+            AbstractLayout abstractLayout = findLayout(view);
 
+            if(abstractLayout != null) {
+                abstractLayout.updateTexts(view);
+                addToCalendar(abstractLayout);
+            }
         }
     }
 }
