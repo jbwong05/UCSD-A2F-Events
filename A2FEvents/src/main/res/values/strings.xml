@@ -10,10 +10,8 @@
     <string name="event_month">eventMonth</string>
     <string name="event_day_number">eventDayNumber</string>
     <string name="event_name">eventName</string>
-    <string name="event_description">eventDescription</string>
-    <string name="event_time">eventTime</string>
-    <string name="event_location">eventLocation</string>
-    <string name="event_date_and_time">eventDateAndTime</string>
+    <string name="event_excerpts">eventExcerpts</string>
+    <string name="event_num_excerpts">eventNumExcerpts</string>
     <string name="save_the_date_name">SAVE THE DATE</string>
     <string name="image_prefix">img-</string>
     <string name="image_extension">.jpg</string>

@@ -2,16 +2,14 @@ import requests
 from bs4 import BeautifulSoup
 
 class Event:
-    def __init__(self, theImageLink, theImageName, theMonth, theDayNumber, theName, theDescription, theTime, theLocation, theDateAndTime):
+    def __init__(self, theImageLink, theImageName, theMonth, theDayNumber, theName, theExcerpts):
         self.eventImageLink = theImageLink
         self.eventImageName = theImageName
         self.eventMonth = theMonth
         self.eventDayNumber = theDayNumber
         self.eventName = theName
-        self.eventDescription = theDescription
-        self.eventTime = theTime
-        self.eventLocation = theLocation
-        self.eventDateAndTime = theDateAndTime
+        self.eventExcerpts = theExcerpts
+        self.eventNumExcerpts = len(theExcerpts)
 
 def setup():
     # Gets HTML from A2F website
@@ -19,13 +17,18 @@ def setup():
     request = requests.get(webpage)
     return BeautifulSoup(request.text, 'html.parser')
 
-def stripImageLinks(images):
+def stripImageLinks(events):
     # Strips links to event images
     strippedImageLinks = []
 
-    for image in images:
-        strippedImageLinks.append(image['data-image'])
+    for event in events:
+        data = removeNonTags(event.contents)
 
+        if len(data) > 0 and (data[0]['class'][0] == 'summary-thumbnail-outer-container'):
+            strippedImageLinks.append(data[0].div.img['data-image'])
+        else:
+            strippedImageLinks.append('')
+   
     return strippedImageLinks
 
 def stripImageNames(images):
@@ -33,27 +36,39 @@ def stripImageNames(images):
     strippedImageNames = []
 
     for imageLink in images:
-        strippedImageNames.append(imageLink[imageLink.rfind('/') + 1:])
+        if imageLink != '':
+            strippedImageNames.append(imageLink[imageLink.rfind('/') + 1:])
+        else:
+            strippedImageNames.append('')
 
     return strippedImageNames
 
-def stripMonths(months):
-    # Strips text from month tags
+def stripMonths(events):
+    # Strips links to event images
     strippedMonths = []
 
-    for month in months:
-        strippedMonths.append(month.text)
+    for event in events:
+        data = removeNonTags(event.contents)
 
+        if len(data) > 0 and (data[0]['class'][0] == 'summary-thumbnail-outer-container'):
+            strippedMonths.append(data[0].div.div.div.span.text)
+        else:
+            strippedMonths.append('')
+   
     return strippedMonths
 
-def stripDayNumbers(dayNumbers):
+def stripDayNumbers(events):
     # Strips text from day number tags
-
     strippedDayNumbers = []
 
-    for dayNumber in dayNumbers:
-        strippedDayNumbers.append(dayNumber.text)
+    for event in events:
+        data = removeNonTags(event.contents)
 
+        if len(data) > 0 and (data[0]['class'][0] == 'summary-thumbnail-outer-container'):
+            strippedDayNumbers.append(removeNonTags(data[0].div.div.div.contents)[1].text)
+        else:
+            strippedDayNumbers.append('')
+   
     return strippedDayNumbers
 
 def removeReturns(listToRemove):
@@ -62,6 +77,17 @@ def removeReturns(listToRemove):
 
     for item in listToRemove:
         if item != '\n':
+            newList.append(item)
+
+    return newList
+
+def removeNonTags(listToRemove):
+    newList = []
+
+    tempSoup = BeautifulSoup('<b class="temp">temp</b>', 'html.parser')
+
+    for item in listToRemove:
+        if type(item) == type(tempSoup.b):
             newList.append(item)
 
     return newList
@@ -91,31 +117,37 @@ def main():
         saveTheDateImageLink = saveTheDateImage['src']
         saveTheDateImageName = saveTheDateImage['alt']
         saveTheDateInfo = saveTheDate[1].contents[0].contents[0].contents
-        saveTheDateDescription = saveTheDateInfo[0].text
-        saveTheDateDate = saveTheDateInfo[1].text
-        saveTheDateLocation = saveTheDateInfo[2].text
-        eventList.append(Event(saveTheDateImageLink, saveTheDateImageName, '', '', saveTheDateTitle, saveTheDateDescription, saveTheDateDate, saveTheDateLocation, ''))
+        excerptList = []
+        excerptList.append(saveTheDateInfo[0].text)
+        excerptList.append(saveTheDateInfo[1].text)
+        excerptList.append(saveTheDateInfo[2].text)
+        eventList.append(Event(saveTheDateImageLink, saveTheDateImageName, '', '', saveTheDateTitle, excerptList))
 
     # Get Information
-    events = soup.find_all('div', attrs={'class': 'summary-content sqs-gallery-meta-container'})
-
+    events = soup.find_all('div', attrs={'class': 'summary-item'})
+   
     # Checks if events found
     if len(events) > 0:
 
-        images = soup.find_all('img', attrs={'class': 'summary-thumbnail-image'})
-        images = stripImageLinks(images)
+        events = removeNonTags(events)
 
+        images = []
+        images = stripImageLinks(events)
+        
         imageNames = []
         imageNames = stripImageNames(images)
 
-        months = soup.find_all('span', attrs={'class': 'summary-thumbnail-event-date-month'})
-        months = stripMonths(months)
+        months = []
+        months = stripMonths(events)
 
-        dayNumbers = soup.find_all('span', attrs={'class': 'summary-thumbnail-event-date-day'})
-        dayNumbers = stripDayNumbers(dayNumbers)
+        dayNumbers = []
+        dayNumbers = stripDayNumbers(events)
 
+        excerpts = []
+
+        info = soup.find_all('div', attrs={'class': 'summary-content sqs-gallery-meta-container'})
         for i in range(len(events)):
-            contents = removeReturns(events[i].contents)
+            contents = removeReturns(info[i].contents)
 
             # Retrieves the title
             titleTag = contents[getIndex(' Title ', contents)]
@@ -125,31 +157,16 @@ def main():
             excerptTag = contents[getIndex(' Excerpt ', contents)]
             excerptList = removeReturns(excerptTag.contents)
 
-            description = ''
-
-            # Checks for description
-            if len(excerptList) > 2:
-                # Extracts the description
-                description = excerptList[0].text
-                excerptList.remove(excerptList[0])
-
-            # Extracts the time and location
-            time = excerptList[0].text
-            location = excerptList[1].text
-
-            # Extracts the date and time
-            dateAndTimeTag = contents[getIndex(' Metadata (Below Content) ', contents)]
-            primaryDateTag = removeReturns(dateAndTimeTag.contents)[0]
-            primaryDate = primaryDateTag.time.text
-            secondaryTimeTag = removeReturns(dateAndTimeTag.contents)[1]
-            secondaryTime = secondaryTimeTag.time.contents[0].text
-            dateAndTime = primaryDate + ' ' + secondaryTime
+            excerpts = []
+            for j in range(len(excerptList)):
+                excerpts.append(excerptList[j].text)
 
             # Adds the event
-            eventList.append(Event(images[i], imageNames[i], months[i], dayNumbers[i], title, description, time, location, dateAndTime))
+            eventList.append(Event(images[i], imageNames[i], months[i], dayNumbers[i], title, excerpts))
 
         return eventList
 
+       
     else:
         # Return empty list if no events found
         return eventList

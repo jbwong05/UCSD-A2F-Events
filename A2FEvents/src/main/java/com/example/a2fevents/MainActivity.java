@@ -8,8 +8,16 @@ import android.view.View;
 import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+
+import com.chaquo.python.PyObject;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
+
+import static android.view.Gravity.CENTER_HORIZONTAL;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,15 +66,22 @@ public class MainActivity extends AppCompatActivity {
     public class EventLayout extends AbstractLayout implements View.OnClickListener {
 
         private MonthDayNumberLayout monthDayNumberLayout;
-        private TextView dateAndTimeView;
-        private String dateAndTimeText;
+
+        public EventLayout(Context context, MainActivity mainActivity, int numExcerpts) {
+            super(context);
+            LayoutInflater inflater = LayoutInflater.from(context);
+            inflater.inflate(R.layout.event_layout, this);
+            addInfoViews(context, mainActivity, numExcerpts);
+            setupViews();
+            //setupOnClickListener();
+        }
 
         public EventLayout(Context context) {
             super(context);
             LayoutInflater inflater = LayoutInflater.from(context);
             inflater.inflate(R.layout.event_layout, this);
             setupViews();
-            setupOnClickListener();
+            //setupOnClickListener();
         }
 
         public EventLayout(Context context, AttributeSet attrs) {
@@ -74,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
             LayoutInflater inflater = LayoutInflater.from(context);
             inflater.inflate(R.layout.event_layout, this);
             setupViews();
-            setupOnClickListener();
+            //setupOnClickListener();
         }
 
         public EventLayout(Context context, AttributeSet attrs, int defStyle) {
@@ -82,33 +97,27 @@ public class MainActivity extends AppCompatActivity {
             LayoutInflater inflater = LayoutInflater.from(context);
             inflater.inflate(R.layout.event_layout, this);
             setupViews();
-            setupOnClickListener();
+            //setupOnClickListener();
         }
 
         private void setupViews() {
             // Gets a reference to eac view
             super.setupViews((ProportionalImageView) findViewById(R.id.eventImage),
-                    (TextView) findViewById(R.id.eventName),
-                    (TextView) findViewById(R.id.eventDescription),
-                    (TextView) findViewById(R.id.eventTime),
-                    (TextView) findViewById(R.id.eventLocation));
+                    (TextView) findViewById(R.id.eventName));
             monthDayNumberLayout = findViewById(R.id.monthDayView);
-            dateAndTimeView = findViewById(R.id.eventDateAndTime);
         }
 
         @Override
         public boolean hasView(View view) {
             // Determines if the current layout has the given view
-            return super.hasView(view) || monthDayNumberLayout.hasView(view) || dateAndTimeView.getId() == view.getId();
+            return super.hasView(view) || monthDayNumberLayout.hasView(view);
         }
 
         @Override
-        public void displayEvent(String imagePath, String month, String dayNumber, String name, String description, String time, String location, String dateAndTime) {
+        public void displayEvent(String imagePath, String month, String dayNumber, String name, List<PyObject> excerpts) {
             // Updates the layout with the given event information
-            super.displayEvent(imagePath, month, dayNumber, name, description, time, location, dateAndTime);
+            super.displayEvent(imagePath, month, dayNumber, name, excerpts);
             monthDayNumberLayout.displayEvent(month, dayNumber);
-            dateAndTimeView.setText(dateAndTime);
-            dateAndTimeText = dateAndTime;
         }
 
         @Override
@@ -116,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
             // Retrieves a Calendar object representing the starting time
             Calendar calendar = Calendar.getInstance();
             calendar.clear();
-            calendar.set(getStartYear(), getStartMonth(), getStartDayNumber(), getStartHour(), getStartMinute(), 0);
+            //calendar.set(getStartYear(), getStartMonth(), getStartDayNumber(), getStartHour(), getStartMinute(), 0);
             return calendar;
         }
 
@@ -125,11 +134,11 @@ public class MainActivity extends AppCompatActivity {
             // Retrieves a Calendar object representing the ending time
             Calendar calendar = Calendar.getInstance();
             calendar.clear();
-            calendar.set(getEndYear(), getEndMonth(), getEndDayNumber(), getEndHour(), getEndMinute(), 0);
+            //calendar.set(getEndYear(), getEndMonth(), getEndDayNumber(), getEndHour(), getEndMinute(), 0);
             return calendar;
         }
 
-        private int getStartYear() {
+        /*private int getStartYear() {
             // Assumes dateAndTimeText format of SEP 13, 2019 6:30 PM – 11:00 PM
             // Parses the specific year
             String text = dateAndTimeText.substring(dateAndTimeText.indexOf(',') + 2);
@@ -225,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
             super.setupOnClickListener(this);
             monthDayNumberLayout.setOnClickListener(this);
             dateAndTimeView.setOnClickListener(this);
-        }
+        }*/
 
         @Override
         public void onClick(View view) {
@@ -235,6 +244,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public class SaveTheDateLayout extends AbstractLayout implements View.OnClickListener {
+
+        public SaveTheDateLayout(Context context, MainActivity mainActivity, int numExcerpts) {
+            super(context);
+            LayoutInflater inflater = LayoutInflater.from(context);
+            inflater.inflate(R.layout.save_the_date_layout, this);
+            addInfoViews(context, mainActivity, numExcerpts);
+            setupViews();
+            setupOnClickListener();
+        }
 
         public SaveTheDateLayout(Context context) {
             super(context);
@@ -263,16 +281,13 @@ public class MainActivity extends AppCompatActivity {
         private void setupViews() {
             // Retrieves references for each View
             super.setupViews((ProportionalImageView) findViewById(R.id.saveTheDateImage),
-                    (TextView) findViewById(R.id.saveTheDateName),
-                    (TextView) findViewById(R.id.saveTheDateDescription),
-                    (TextView) findViewById(R.id.saveTheDateTime),
-                    (TextView) findViewById(R.id.saveTheDateLocation));
+                    (TextView) findViewById(R.id.saveTheDateName));
         }
 
         @Override
-        public void displayEvent(String imagePath, String month, String dayNumber, String name, String description, String time, String location, String dateAndTime) {
+        public void displayEvent(String imagePath, String month, String dayNumber, String name, List<PyObject> excerpts) {
             // Delegates to parent method to update layout with event information
-            super.displayEvent(imagePath, month, dayNumber, name, description, time, location, dateAndTime);
+            super.displayEvent(imagePath, month, dayNumber, name, excerpts);
         }
 
         @Override
@@ -280,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
             // Retrieves a Calendar object representing the starting time
             Calendar calendar = Calendar.getInstance();
             calendar.clear();
-            calendar.set(getStartYear(), getStartMonth(), getStartDayNumber(), getStartHour(), getStartMinute(), 0);
+            //calendar.set(getStartYear(), getStartMonth(), getStartDayNumber(), getStartHour(), getStartMinute(), 0);
             return calendar;
         }
 
@@ -289,11 +304,11 @@ public class MainActivity extends AppCompatActivity {
             // Retrieves a Calendar object representing the ending time
             Calendar calendar = Calendar.getInstance();
             calendar.clear();
-            calendar.set(getEndYear(), getEndMonth(), getEndDayNumber(), getEndHour(), getEndMinute(), 0);
+            //calendar.set(getEndYear(), getEndMonth(), getEndDayNumber(), getEndHour(), getEndMinute(), 0);
             return calendar;
         }
 
-        private int getStartYear() {
+        /*private int getStartYear() {
             // Assumes this year
             Calendar now = Calendar.getInstance();
             return now.get(Calendar.YEAR);
@@ -382,7 +397,7 @@ public class MainActivity extends AppCompatActivity {
         private int getEndAMPM() {
             // Determines the time of day for the ending time
             return getEndHour() < getStartHour() ? Calendar.AM : getStartAMPM();
-        }
+        }*/
 
         protected void setupOnClickListener() {
             // Delegates to parent method to set up onClickListener for each View
@@ -393,6 +408,41 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View view) {
             // Add to calendar prompt
             addToCalendar(this);
+        }
+    }
+
+    public class InfoLayout extends ConstraintLayout implements View.OnClickListener {
+
+        private TextView textView;
+
+        public InfoLayout(Context context) {
+            super(context);
+            LayoutInflater inflater = LayoutInflater.from(context);
+            inflater.inflate(R.layout.info_layout, this);
+            textView = findViewById(R.id.infoText);
+        }
+
+        public InfoLayout(Context context, AttributeSet attrs) {
+            super(context, attrs);
+            LayoutInflater inflater = LayoutInflater.from(context);
+            inflater.inflate(R.layout.info_layout, this);
+            textView = findViewById(R.id.infoText);
+        }
+
+        public InfoLayout(Context context, AttributeSet attrs, int defStyle) {
+            super(context, attrs, defStyle);
+            LayoutInflater inflater = LayoutInflater.from(context);
+            inflater.inflate(R.layout.info_layout, this);
+            textView = findViewById(R.id.infoText);
+        }
+
+        public void setText(String text) {
+            textView.setText(text);
+        }
+
+        @Override
+        public void onClick(View view) {
+
         }
     }
 }

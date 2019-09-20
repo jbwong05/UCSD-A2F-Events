@@ -45,8 +45,8 @@ public class AddToCalendarDialogFragment extends DialogFragment {
         intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, layout.getStartTime().getTimeInMillis());
         intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, layout.getEndTime().getTimeInMillis());
         intent.putExtra(CalendarContract.Events.TITLE, layout.getName());
-        intent.putExtra(CalendarContract.Events.DESCRIPTION, layout.getDescription());
-        intent.putExtra(CalendarContract.Events.EVENT_LOCATION, layout.getLocation());
+        //intent.putExtra(CalendarContract.Events.DESCRIPTION, layout.getDescription());
+        //intent.putExtra(CalendarContract.Events.EVENT_LOCATION, layout.getLocation());
 
         // Start calendar activity
         startActivity(intent);
