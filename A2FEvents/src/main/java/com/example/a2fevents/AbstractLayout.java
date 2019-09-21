@@ -113,7 +113,7 @@ public abstract class AbstractLayout extends ConstraintLayout {
             added = true;
         }
 
-        if(text.contains("WHERE:") || text.contains("Where:") || text.matches("\\s[@]\\s\\D")) {
+        if(text.contains("WHERE:") || text.contains("Where:") || text.matches(".*\\s[@]\\s\\D.*")) {
             numLocations++;
             locations.append(id, text);
             added = true;
@@ -132,6 +132,14 @@ public abstract class AbstractLayout extends ConstraintLayout {
     }
 
     public String getName() {
+
+        if(numTimes > 1) {
+            if(timeText.matches(".*[0-9][aApP][mM]\\s[-]\\s.*\\s[@]\\s.*")) {
+                String text = timeText.substring(timeText.indexOf('-') + 1);
+                text = text.substring(0, text.indexOf('@'));
+                nameText = text.trim();
+            }
+        }
         return nameText;
     }
 
@@ -149,11 +157,20 @@ public abstract class AbstractLayout extends ConstraintLayout {
             return "";
         }
 
-        String text;
-        char delim = locationText.contains("@") ? '@' : ':';
-        text = locationText.substring(locationText.indexOf(delim) + 2);
+        // Where: and Multiple locations
+        if((locationText.contains("Where:") || locationText.contains("WHERE:")) && locationText.matches(".*([\\s][@][\\s].*){2,}")) {
+            // Removes "Where: "
+            locationText = locationText.substring(locationText.indexOf(":") + 2);
 
-        return text;
+        } else if (locationText.contains("Where:") || locationText.contains("WHERE:")) {
+            locationText = locationText.substring(locationText.indexOf(":") + 2);
+
+        } else if(locationText.equals(timeText)) {
+            // Time and location text are the same
+            locationText = locationText.substring(locationText.indexOf("@") + 1).trim();
+        }
+
+        return locationText;
     }
 
     protected String getClickedText(int numInfos, SparseArray<String> array, View clickedView) {
@@ -176,17 +193,6 @@ public abstract class AbstractLayout extends ConstraintLayout {
         timeText = getClickedText(numTimes, times, clickedView);
         locationText = getClickedText(numLocations, locations, clickedView);
         descriptionText = getClickedText(numDescriptions, descriptions, clickedView);
-        updateName();
-    }
-
-    private void updateName() {
-        if(numTimes > 1) {
-            if(timeText.matches(".*[0-9][aApP][mM]\\s[-]\\s.*\\s[@]\\s.*")) {
-                String text = timeText.substring(timeText.indexOf('-') + 1);
-                text = text.substring(0, text.indexOf('@'));
-                nameText = text.trim();
-            }
-        }
     }
 
     public boolean hasView(View view) {

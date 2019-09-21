@@ -210,7 +210,13 @@ public class MainActivity extends AppCompatActivity {
                 if(timeText.contains("WHEN") || timeText.contains("When")) {
 
                     text = timeText.substring(timeText.indexOf(':') + 2);
-                    text = text.substring(0, text.indexOf(':'));
+
+                    if(text.contains(":")) {
+                        text = text.substring(0, text.indexOf(':'));
+                    } else {
+                        text = text.substring(0, text.indexOf(' '));
+                    }
+
 
                 } else if(timeText.matches(".*[0-9][aApP][mM]\\s[-]\\s.*")) {
 
@@ -239,8 +245,14 @@ public class MainActivity extends AppCompatActivity {
                 if(timeText.contains("WHEN") || timeText.contains("When")) {
 
                     text = timeText.substring(timeText.indexOf(':') + 1);
-                    text = text.substring(text.indexOf(':') + 1);
-                    text = text.substring(0, text.indexOf(' '));
+
+                    if(text.contains(":")) {
+                        text = text.substring(text.indexOf(':') + 1);
+                        text = text.substring(0, text.indexOf(' '));
+                    } else {
+                        return 0;
+                    }
+
 
                 } else if(timeText.matches(".*[0-9][aApP][mM]\\s[-]\\s.*")) {
 
