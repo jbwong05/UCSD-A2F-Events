@@ -107,7 +107,7 @@ public abstract class AbstractLayout extends ConstraintLayout {
 
     private void addToList(int id, String text) {
         boolean added = false;
-        if(text.contains("WHEN:") || text.contains("When:") || text.matches("[0-9][aApP][mM]\\s[-]\\s.")) {
+        if(text.contains("WHEN:") || text.contains("When:") || text.matches("^[0-9][aApP][mM]\\s[-]\\s.*")) {
             numTimes++;
             times.append(id, text);
             added = true;

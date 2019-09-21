@@ -210,15 +210,15 @@ public class MainActivity extends AppCompatActivity {
                 if(timeText.contains("WHEN") || timeText.contains("When")) {
 
                     text = timeText.substring(timeText.indexOf(':') + 2);
+                    text = text.substring(0, text.indexOf(':'));
 
-                    if(text.contains(":")) {
-                        text = text.substring(0, text.indexOf(':'));
+                } else if(timeText.matches(".*[0-9][aApP][mM]\\s[-]\\s.*")) {
+
+                    if(timeText.matches("^[0-9][:][0-9][0-9][aApP][mM]\\s[-]\\s.*")) {
+                        text = timeText.substring(0, timeText.indexOf(':'));
                     } else {
-                        text = text.substring(0, text.indexOf(' '));
+                        text = timeText.substring(0, timeText.indexOf(' ') - 2);
                     }
-
-                } else if(text.matches("[0-9][aApP][mM]\\s[-]\\s.")) {
-                    text = timeText.substring(0, timeText.indexOf(' ') - 2);
                 }
 
                 return CalendarUtilities.adjustTime(Integer.parseInt(text), getStartAMPM());
@@ -234,20 +234,26 @@ public class MainActivity extends AppCompatActivity {
             if(timeText == null) {
                 return -1;
             } else {
-                String text;
+                String text = "";
+                
+                if(timeText.contains("WHEN") || timeText.contains("When")) {
 
-                if(timeText.contains(":")) {
                     text = timeText.substring(timeText.indexOf(':') + 1);
+                    text = text.substring(text.indexOf(':') + 1);
+                    text = text.substring(0, text.indexOf(' '));
 
-                    if(text.contains(":")) {
-                        text = text.substring(text.indexOf(':') + 1);
-                        text = text.substring(0, text.indexOf(' '));
-                        return Integer.parseInt(text);
+                } else if(timeText.matches(".*[0-9][aApP][mM]\\s[-]\\s.*")) {
+
+                    if(timeText.matches("^[0-9][:][0-9][0-9][aApP][mM]\\s[-]\\s.*")) {
+                        text = timeText.substring(timeText.indexOf(':') + 1);
+                        text = text.substring(0, text.indexOf(' ') - 2);
+                    } else {
+                        return 0;
                     }
                 }
-            }
 
-            return 0;
+                return Integer.parseInt(text);
+            }
         }
 
         private int getEndMinute() {
