@@ -14,7 +14,6 @@
     <string name="event_num_excerpts">eventNumExcerpts</string>
     <string name="save_the_date_name">SAVE THE DATE</string>
     <string name="image_prefix">img-</string>
-    <string name="image_extension">.jpg</string>
     <string name="folder_name">images</string>
     <string name="image_view_id">id</string>
     <string name="add_to_calendar_prompt">Add event to calendar?</string>

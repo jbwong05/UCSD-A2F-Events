@@ -13,7 +13,6 @@ public class StringConstants {
     public static String EVENT_NUM_EXCERPTS;
     public static String SAVE_THE_DATE_NAME;
     public static String IMAGE_PREFIX;
-    public static String IMAGE_EXTENSION;
     public static String FOLDER_NAME;
     public static String NO_EVENTS;
     public static String SCRIPT_NAME;
@@ -34,7 +33,6 @@ public class StringConstants {
         EVENT_NUM_EXCERPTS = resources.getString(R.string.event_num_excerpts);
         SAVE_THE_DATE_NAME = resources.getString(R.string.save_the_date_name);
         IMAGE_PREFIX = resources.getString(R.string.image_prefix);
-        IMAGE_EXTENSION = resources.getString(R.string.image_extension);
         FOLDER_NAME = resources.getString(R.string.folder_name);
         NO_EVENTS = resources.getString(R.string.no_events);
         SCRIPT_NAME = resources.getString(R.string.script_name);

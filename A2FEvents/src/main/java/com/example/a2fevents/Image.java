@@ -27,6 +27,15 @@ public class Image {
 
     public static String getFullImagePath(String path, String imageName) {
         // Retrieves the full image path
-        return path + "/" + StringConstants.IMAGE_PREFIX + imageName.hashCode() + StringConstants.IMAGE_EXTENSION;
+        return path + "/" + StringConstants.IMAGE_PREFIX + imageName.hashCode() + getExtension(imageName);
+    }
+
+    private static String getExtension(String imageName) {
+        String extension = imageName;
+        while(extension.matches(".*[.][a-z]{3}$")) {
+            extension = extension.substring(extension.indexOf('.') + 1);
+        }
+
+        return "." + extension;
     }
 }
