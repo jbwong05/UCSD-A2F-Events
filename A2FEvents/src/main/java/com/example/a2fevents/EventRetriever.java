@@ -164,6 +164,7 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
     }
 
     private int getNumExcerpts(PyObject event) {
+        // Retrieves the number of excerpts containing info for the event
         int numExcerpts = -1;
         if(event != null) {
             PyObject excerptCount = event.get(StringConstants.EVENT_NUM_EXCERPTS);
@@ -209,6 +210,7 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
     }
 
     private void downloadImages(FilesToDownload filesToDownload) {
+        // Uses multiple threads to download each image
         ExecutorService taskExecutor = Executors.newFixedThreadPool(NUMBER_OF_CORES);
 
         for(int i = 0; i < filesToDownload.getNumImages(); i++) {

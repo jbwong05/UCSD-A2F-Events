@@ -31,6 +31,7 @@ public class Image {
     }
 
     private static String getExtension(String imageName) {
+        // Retrieves the extension for the current image
         String extension = imageName;
         while(extension.matches(".*[.][a-z]{3}$")) {
             extension = extension.substring(extension.indexOf('.') + 1);

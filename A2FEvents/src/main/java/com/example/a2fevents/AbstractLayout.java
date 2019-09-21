@@ -54,6 +54,7 @@ public abstract class AbstractLayout extends ConstraintLayout {
     }
 
     protected void addInfoViews(Context context, MainActivity mainActivity, int numInfo) {
+        // Adds numInfo infoLayouts to the current layout
         ConstraintLayout constraintLayout = (ConstraintLayout) this.getChildAt(0);
         excerptStartIndex = constraintLayout.getChildCount();
         infoLayouts = new SparseArray<>();
@@ -65,6 +66,7 @@ public abstract class AbstractLayout extends ConstraintLayout {
             View aboveChild = constraintLayout.getChildAt(constraintLayout.getChildCount() - 1);
             constraintLayout.addView(infoLayout);
 
+            // Applies new constraints
             ConstraintSet constraintSet = new ConstraintSet();
             constraintSet.clone(constraintLayout);
             constraintSet.connect(infoLayout.getId(), ConstraintSet.TOP, aboveChild.getId(), ConstraintSet.BOTTOM, 0);
@@ -93,6 +95,7 @@ public abstract class AbstractLayout extends ConstraintLayout {
         nameView.setText(name);
         nameText = name;
 
+        // Displays excerpt infos and saves off Strings
         for(int i = 0; i < excerpts.size(); i++) {
             PyObject text = excerpts.get(i);
 
@@ -106,6 +109,7 @@ public abstract class AbstractLayout extends ConstraintLayout {
     }
 
     private void addToList(int id, String text) {
+        // Saves off info Strings
         boolean added = false;
         if(text.contains("WHEN:") || text.contains("When:") || text.matches("^[0-9][aApP][mM]\\s[-]\\s.*")) {
             numTimes++;
@@ -133,7 +137,10 @@ public abstract class AbstractLayout extends ConstraintLayout {
 
     public String getName() {
 
+        // Retrieves the name
         if(numTimes > 1) {
+
+            // Handles multiple names case
             if(timeText.matches(".*[0-9][aApP][mM]\\s[-]\\s.*\\s[@]\\s.*")) {
                 String text = timeText.substring(timeText.indexOf('-') + 1);
                 text = text.substring(0, text.indexOf('@'));
@@ -176,12 +183,16 @@ public abstract class AbstractLayout extends ConstraintLayout {
     protected String getClickedText(int numInfos, SparseArray<String> array, View clickedView) {
         String text = null;
 
+        // Retrieves the text that was clicked
         if(numInfos == 1) {
+            // Only one possibility
             text = array.get(array.keyAt(0));
 
         } else if(numInfos > 1) {
 
+            // Multiple possibilities
             if(infoLayouts.indexOfKey(clickedView.getId()) >= 0) {
+                // Multiple possibilities but infoLayout was clicked
                 text = infoLayouts.get(infoLayouts.keyAt(infoLayouts.indexOfKey(clickedView.getId()))).getText();
             }
         }
@@ -190,6 +201,7 @@ public abstract class AbstractLayout extends ConstraintLayout {
     }
 
     public void updateTexts(View clickedView) {
+        // Updates the current texts
         timeText = getClickedText(numTimes, times, clickedView);
         locationText = getClickedText(numLocations, locations, clickedView);
         descriptionText = getClickedText(numDescriptions, descriptions, clickedView);

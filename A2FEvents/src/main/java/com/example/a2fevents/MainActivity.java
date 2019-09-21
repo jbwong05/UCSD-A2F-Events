@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AbstractLayout findLayout(View view){
 
+        // Finds which layout contains the selected view
         LinearLayout linearLayout = findViewById(R.id.internalLinearLayout);
 
         boolean found = false;
@@ -150,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getStartYear() {
+            // Retrieves the starting year
             Calendar now = Calendar.getInstance();
             int year = now.get(Calendar.YEAR);
             if(getEndMonth() < now.get(Calendar.MONTH)) {
@@ -203,10 +205,12 @@ public class MainActivity extends AppCompatActivity {
 
         private int getStartHour() {
 
+            // Retrieves the ending hour
             if(timeText == null) {
                 return -1;
             } else {
                 String text = "";
+                // If preceded by "when"
                 if(timeText.contains("WHEN") || timeText.contains("When")) {
 
                     text = timeText.substring(timeText.indexOf(':') + 2);
@@ -218,8 +222,10 @@ public class MainActivity extends AppCompatActivity {
                     }
 
 
+                    // If has pattern "...9pm - ..."
                 } else if(timeText.matches(".*[0-9][aApP][mM]\\s[-]\\s.*")) {
 
+                    // If starts with pattern "9:09am - ..."
                     if(timeText.matches("^[0-9][:][0-9][0-9][aApP][mM]\\s[-]\\s.*")) {
                         text = timeText.substring(0, timeText.indexOf(':'));
                     } else {
@@ -237,11 +243,13 @@ public class MainActivity extends AppCompatActivity {
 
         private int getStartMinute() {
 
+            // Retrieves starting minute with same parsing logic as getStartingHour
             if(timeText == null) {
                 return -1;
             } else {
                 String text = "";
 
+                // If preceded by "when"
                 if(timeText.contains("WHEN") || timeText.contains("When")) {
 
                     text = timeText.substring(timeText.indexOf(':') + 1);
@@ -253,9 +261,10 @@ public class MainActivity extends AppCompatActivity {
                         return 0;
                     }
 
-
+                    // If has pattern "...9pm - ..."
                 } else if(timeText.matches(".*[0-9][aApP][mM]\\s[-]\\s.*")) {
 
+                    // If has pattern "...9pm - ..."
                     if(timeText.matches("^[0-9][:][0-9][0-9][aApP][mM]\\s[-]\\s.*")) {
                         text = timeText.substring(timeText.indexOf(':') + 1);
                         text = text.substring(0, text.indexOf(' ') - 2);
@@ -382,6 +391,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getStartMonth() {
+            // Retrieves the starting month
             if(timeText == null) {
                 return -1;
             } else {
@@ -403,6 +413,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getStartDayNumber() {
+            // Retrieves the starting day number
             if(timeText == null) {
                 return -1;
             } else {
@@ -428,6 +439,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getStartHour() {
+            // Retrieves the starting hour
             if(timeText == null) {
                 return -1;
             } else {
@@ -536,9 +548,11 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
+            // Finds the layout containing the selected infoView
             AbstractLayout abstractLayout = findLayout(view);
 
             if(abstractLayout != null) {
+                // Updates text vars and calls calendar addition method
                 abstractLayout.updateTexts(view);
                 addToCalendar(abstractLayout);
             }
