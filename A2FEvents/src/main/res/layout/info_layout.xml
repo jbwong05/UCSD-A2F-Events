@@ -5,27 +5,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
-        android:id="@+id/saveTheDateName"
+        android:id="@+id/infoText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:fontFamily="@font/raleway_bold"
-        android:textColor="@color/event_name"
-        android:textSize="24sp"
+        android:gravity="center|center_horizontal"
+        android:textColor="@color/black"
+        android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/saveTheDateImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <com.example.a2fevents.ProportionalImageView
-        android:id="@+id/saveTheDateImage"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:scaleType="fitXY"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/saveTheDateName"
-        app:srcCompat="@android:color/transparent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,12 +8,19 @@
         android:id="@+id/eventImage"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:scaleType="fitCenter"
+        android:scaleType="fitXY"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:color/transparent" />
+
+    <com.example.a2fevents.MonthDayNumberLayout
+        android:id="@+id/monthDayView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toRightOf="@id/eventImage"
+        app:layout_constraintTop_toTopOf="@id/eventImage" />
 
     <TextView
         android:id="@+id/eventName"
@@ -29,66 +36,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/eventImage" />
 
-    <TextView
-        android:id="@+id/eventDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/raleway_bold"
-        android:gravity="center|center_horizontal"
-        android:textColor="@color/location"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/eventName" />
-
-    <TextView
-        android:id="@+id/eventTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/raleway_bold"
-        android:gravity="center|center_horizontal"
-        android:textColor="@color/location"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/eventDescription" />
-
-    <TextView
-        android:id="@+id/eventLocation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/raleway_bold"
-        android:gravity="center|center_horizontal"
-        android:textColor="@color/location"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/eventTime" />
-
-    <TextView
-        android:id="@+id/eventDateAndTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/raleway"
-        android:gravity="center|center_horizontal"
-        android:textColor="@color/date_and_time"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/eventLocation" />
-
-    <com.example.a2fevents.MonthDayNumberLayout
-        android:id="@+id/monthDayView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintRight_toRightOf="@id/eventImage"
-        app:layout_constraintTop_toTopOf="@id/eventImage" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>

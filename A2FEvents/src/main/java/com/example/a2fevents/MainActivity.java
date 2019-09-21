@@ -5,11 +5,15 @@ import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import com.chaquo.python.PyObject;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,16 +54,39 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void addToCalendar(AbstractLayout layout) {
+    private void addToCalendar(AbstractLayout layout) {
         // Add to calendar prompt
         new AddToCalendarDialogFragment(layout).show(getSupportFragmentManager(), StringConstants.CALENDAR_PROMPT_TAG);
+    }
+
+    private AbstractLayout findLayout(View view){
+
+        // Finds which layout contains the selected view
+        LinearLayout linearLayout = findViewById(R.id.internalLinearLayout);
+
+        boolean found = false;
+        int index;
+        for(index = 0; index < linearLayout.getChildCount() && !found; index++) {
+
+            found = ((AbstractLayout)linearLayout.getChildAt(index)).hasView(view);
+        }
+
+        index--;
+        return found ? (AbstractLayout)linearLayout.getChildAt(index) : null;
     }
 
     public class EventLayout extends AbstractLayout implements View.OnClickListener {
 
         private MonthDayNumberLayout monthDayNumberLayout;
-        private TextView dateAndTimeView;
-        private String dateAndTimeText;
+
+        public EventLayout(Context context, MainActivity mainActivity, int numExcerpts) {
+            super(context);
+            LayoutInflater inflater = LayoutInflater.from(context);
+            inflater.inflate(R.layout.event_layout, this);
+            addInfoViews(context, mainActivity, numExcerpts);
+            setupViews();
+            setupOnClickListener();
+        }
 
         public EventLayout(Context context) {
             super(context);
@@ -88,27 +115,21 @@ public class MainActivity extends AppCompatActivity {
         private void setupViews() {
             // Gets a reference to eac view
             super.setupViews((ProportionalImageView) findViewById(R.id.eventImage),
-                    (TextView) findViewById(R.id.eventName),
-                    (TextView) findViewById(R.id.eventDescription),
-                    (TextView) findViewById(R.id.eventTime),
-                    (TextView) findViewById(R.id.eventLocation));
+                    (TextView) findViewById(R.id.eventName));
             monthDayNumberLayout = findViewById(R.id.monthDayView);
-            dateAndTimeView = findViewById(R.id.eventDateAndTime);
         }
 
         @Override
         public boolean hasView(View view) {
             // Determines if the current layout has the given view
-            return super.hasView(view) || monthDayNumberLayout.hasView(view) || dateAndTimeView.getId() == view.getId();
+            return super.hasView(view) || monthDayNumberLayout.hasView(view);
         }
 
         @Override
-        public void displayEvent(String imagePath, String month, String dayNumber, String name, String description, String time, String location, String dateAndTime) {
+        public void displayEvent(String imagePath, String month, String dayNumber, String name, List<PyObject> excerpts) {
             // Updates the layout with the given event information
-            super.displayEvent(imagePath, month, dayNumber, name, description, time, location, dateAndTime);
+            super.displayEvent(imagePath, month, dayNumber, name, excerpts);
             monthDayNumberLayout.displayEvent(month, dayNumber);
-            dateAndTimeView.setText(dateAndTime);
-            dateAndTimeText = dateAndTime;
         }
 
         @Override
@@ -130,11 +151,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getStartYear() {
-            // Assumes dateAndTimeText format of SEP 13, 2019 6:30 PM – 11:00 PM
-            // Parses the specific year
-            String text = dateAndTimeText.substring(dateAndTimeText.indexOf(',') + 2);
-            text = text.substring(0, text.indexOf(' '));
-            return Integer.parseInt(text);
+            // Retrieves the starting year
+            Calendar now = Calendar.getInstance();
+            int year = now.get(Calendar.YEAR);
+            if(getEndMonth() < now.get(Calendar.MONTH)) {
+                year++;
+            }
+            return year;
         }
 
         private int getEndYear() {
@@ -162,7 +185,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getStartDayNumber() {
-            return Integer.parseInt(monthDayNumberLayout.getDayNumberText());
+            String text = monthDayNumberLayout.getDayNumberText();
+            return text.equals("") ? -1 : Integer.parseInt(text);
         }
 
         private int getEndDayNumber() {
@@ -180,61 +204,122 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getStartHour() {
-            // Assumes timeText format of WHEN: 6:30 PM
-            String text = timeText.substring(timeText.indexOf(':') + 2);
-            text = text.substring(0, text.indexOf(':'));
-            return CalendarUtilities.adjustTime(Integer.parseInt(text), getStartAMPM());
+
+            // Retrieves the ending hour
+            if(timeText == null) {
+                return -1;
+            } else {
+                String text = "";
+                // If preceded by "when"
+                if(timeText.contains("WHEN") || timeText.contains("When")) {
+
+                    text = timeText.substring(timeText.indexOf(':') + 2);
+
+                    if(text.contains(":")) {
+                        text = text.substring(0, text.indexOf(':'));
+                    } else {
+                        text = text.substring(0, text.indexOf(' '));
+                    }
+
+
+                    // If has pattern "...9pm - ..."
+                } else if(timeText.matches(".*[0-9][aApP][mM]\\s[-]\\s.*")) {
+
+                    // If starts with pattern "9:09am - ..."
+                    if(timeText.matches("^[0-9][:][0-9][0-9][aApP][mM]\\s[-]\\s.*")) {
+                        text = timeText.substring(0, timeText.indexOf(':'));
+                    } else {
+                        text = timeText.substring(0, timeText.indexOf(' ') - 2);
+                    }
+                }
+
+                return CalendarUtilities.adjustTime(Integer.parseInt(text), getStartAMPM());
+            }
         }
 
         private int getEndHour() {
-            // Assumes dateAndTimeText format of SEP 13, 2019 6:30 PM – 11:00 PM
-            String text = dateAndTimeText.substring(dateAndTimeText.indexOf('–') + 2);
-            text = text.substring(0, text.indexOf(':'));
-            return CalendarUtilities.adjustTime(Integer.parseInt(text), getEndAMPM());
+            return getEndHour(getStartHour());
         }
 
         private int getStartMinute() {
-            // Assumes timeText format of WHEN: 6:30 PM
-            String text = timeText.substring(timeText.indexOf(':') + 1);
-            text = text.substring(text.indexOf(':') + 1);
-            text = text.substring(0, text.indexOf(' '));
-            return Integer.parseInt(text);
+
+            // Retrieves starting minute with same parsing logic as getStartingHour
+            if(timeText == null) {
+                return -1;
+            } else {
+                String text = "";
+
+                // If preceded by "when"
+                if(timeText.contains("WHEN") || timeText.contains("When")) {
+
+                    text = timeText.substring(timeText.indexOf(':') + 1);
+
+                    if(text.contains(":")) {
+                        text = text.substring(text.indexOf(':') + 1);
+                        text = text.substring(0, text.indexOf(' '));
+                    } else {
+                        return 0;
+                    }
+
+                    // If has pattern "...9pm - ..."
+                } else if(timeText.matches(".*[0-9][aApP][mM]\\s[-]\\s.*")) {
+
+                    // If has pattern "...9pm - ..."
+                    if(timeText.matches("^[0-9][:][0-9][0-9][aApP][mM]\\s[-]\\s.*")) {
+                        text = timeText.substring(timeText.indexOf(':') + 1);
+                        text = text.substring(0, text.indexOf(' ') - 2);
+                    } else {
+                        return 0;
+                    }
+                }
+
+                return Integer.parseInt(text);
+            }
         }
 
         private int getEndMinute() {
-            // Assumes dateAndTimeText format of SEP 13, 2019 6:30 PM – 11:00 PM
-            String text = dateAndTimeText.substring(dateAndTimeText.indexOf('–'));
-            text = text.substring(text.indexOf(':') + 1);
-            text = text.substring(0, text.indexOf(' '));
-            return Integer.parseInt(text);
+            // Assume 1 hour
+            return getStartMinute();
         }
 
         private int getStartAMPM() {
             // Assumes timeText format of WHEN: 6:30 PM
-            return timeText.contains("AM") ? Calendar.AM : Calendar.PM;
+            if(timeText == null) {
+                return -1;
+            } else {
+                return timeText.contains("AM") ? Calendar.AM : Calendar.PM;
+            }
         }
 
         private int getEndAMPM() {
-            // Assumes dateAndTimeText format of SEP 13, 2019 6:30 PM – 11:00 PM
-            String text = dateAndTimeText.substring(dateAndTimeText.indexOf('–'));
-            return text.contains("AM") ? Calendar.AM : Calendar.PM;
+            // Determines the time of day for the ending time
+            return getEndHour() < getStartHour() ? Calendar.AM : getStartAMPM();
         }
 
         protected void setupOnClickListener() {
             // Sets up the onClickListener for all Views
             super.setupOnClickListener(this);
             monthDayNumberLayout.setOnClickListener(this);
-            dateAndTimeView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             // Add to calendar prompt
+            super.updateTexts(view);
             addToCalendar(this);
         }
     }
 
     public class SaveTheDateLayout extends AbstractLayout implements View.OnClickListener {
+
+        public SaveTheDateLayout(Context context, MainActivity mainActivity, int numExcerpts) {
+            super(context);
+            LayoutInflater inflater = LayoutInflater.from(context);
+            inflater.inflate(R.layout.save_the_date_layout, this);
+            addInfoViews(context, mainActivity, numExcerpts);
+            setupViews();
+            setupOnClickListener();
+        }
 
         public SaveTheDateLayout(Context context) {
             super(context);
@@ -263,16 +348,13 @@ public class MainActivity extends AppCompatActivity {
         private void setupViews() {
             // Retrieves references for each View
             super.setupViews((ProportionalImageView) findViewById(R.id.saveTheDateImage),
-                    (TextView) findViewById(R.id.saveTheDateName),
-                    (TextView) findViewById(R.id.saveTheDateDescription),
-                    (TextView) findViewById(R.id.saveTheDateTime),
-                    (TextView) findViewById(R.id.saveTheDateLocation));
+                    (TextView) findViewById(R.id.saveTheDateName));
         }
 
         @Override
-        public void displayEvent(String imagePath, String month, String dayNumber, String name, String description, String time, String location, String dateAndTime) {
+        public void displayEvent(String imagePath, String month, String dayNumber, String name, List<PyObject> excerpts) {
             // Delegates to parent method to update layout with event information
-            super.displayEvent(imagePath, month, dayNumber, name, description, time, location, dateAndTime);
+            super.displayEvent(imagePath, month, dayNumber, name, excerpts);
         }
 
         @Override
@@ -309,10 +391,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getStartMonth() {
-            // Assumes timeText format of When: September 26 @ 6:00 PM
-            String text = timeText.substring(timeText.indexOf(':') + 2);
-            text = text.substring(0, text.indexOf(' '));
-            return CalendarUtilities.convertMonth(text);
+            // Retrieves the starting month
+            if(timeText == null) {
+                return -1;
+            } else {
+                String text = timeText.substring(timeText.indexOf(':') + 2);
+                text = text.substring(0, text.indexOf(' '));
+                return CalendarUtilities.convertMonth(text);
+            }
         }
 
         private int getEndMonth() {
@@ -327,11 +413,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getStartDayNumber() {
-            // Assumes timeText format of When: September 26 @ 6:00 PM
-            String text = timeText.substring(timeText.indexOf(' ') + 1);
-            text = text.substring(text.indexOf(' ') + 1);
-            text = text.substring(0, text.indexOf(' '));
-            return Integer.parseInt(text);
+            // Retrieves the starting day number
+            if(timeText == null) {
+                return -1;
+            } else {
+                String text = timeText.substring(timeText.indexOf(' ') + 1);
+                text = text.substring(text.indexOf(' ') + 1);
+                text = text.substring(0, text.indexOf(' '));
+                return Integer.parseInt(text);
+            }
         }
 
         private int getEndDayNumber() {
@@ -349,24 +439,32 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getStartHour() {
-            // Assumes timeText format of When: September 26 @ 6:00 PM
-            String text = timeText.substring(timeText.indexOf('@') + 2);
-            text = text.substring(0, text.indexOf(':'));
-            return CalendarUtilities.adjustTime(Integer.parseInt(text), getStartAMPM());
+            // Retrieves the starting hour
+            if(timeText == null) {
+                return -1;
+            } else {
+                // Assumes timeText format of When: September 26 @ 6:00 PM
+                String text = timeText.substring(timeText.indexOf('@') + 2);
+                text = text.substring(0, text.indexOf(':'));
+                return CalendarUtilities.adjustTime(Integer.parseInt(text), getStartAMPM());
+            }
         }
 
         private int getEndHour() {
             // Calculates the ending hour
-            int endHour = (getStartHour() + 1) % 25;
-            return endHour == 0 ? 1 : endHour;
+            return super.getEndHour(getStartHour());
         }
 
         private int getStartMinute() {
-            // Assumes timeText format of When: September 26 @ 6:00 PM
-            String text = timeText.substring(timeText.indexOf(':') + 1);
-            text = text.substring(text.indexOf(':') + 1);
-            text = text.substring(0, text.indexOf(' '));
-            return Integer.parseInt(text);
+            if(timeText == null) {
+                return -1;
+            } else {
+                // Assumes timeText format of When: September 26 @ 6:00 PM
+                String text = timeText.substring(timeText.indexOf(':') + 1);
+                text = text.substring(text.indexOf(':') + 1);
+                text = text.substring(0, text.indexOf(' '));
+                return Integer.parseInt(text);
+            }
         }
 
         private int getEndMinute() {
@@ -375,8 +473,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private int getStartAMPM() {
-            // Assumes timeText format of When: September 26 @ 6:00 PM
-            return timeText.contains("AM") ? Calendar.AM : Calendar.PM;
+            if(timeText == null) {
+                return -1;
+            } else {
+                // Assumes timeText format of When: September 26 @ 6:00 PM
+                return timeText.contains("AM") ? Calendar.AM : Calendar.PM;
+            }
         }
 
         private int getEndAMPM() {
@@ -392,7 +494,68 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             // Add to calendar prompt
+            super.updateTexts(view);
             addToCalendar(this);
+        }
+    }
+
+    public class InfoLayout extends ConstraintLayout implements View.OnClickListener {
+
+        private TextView textView;
+
+        public InfoLayout(Context context) {
+            super(context);
+            LayoutInflater inflater = LayoutInflater.from(context);
+            inflater.inflate(R.layout.info_layout, this);
+            textView = findViewById(R.id.infoText);
+            textView.setId((int) Calendar.getInstance().getTimeInMillis());
+            setupOnClickListener();
+        }
+
+        public InfoLayout(Context context, AttributeSet attrs) {
+            super(context, attrs);
+            LayoutInflater inflater = LayoutInflater.from(context);
+            inflater.inflate(R.layout.info_layout, this);
+            textView = findViewById(R.id.infoText);
+            textView.setId((int) Calendar.getInstance().getTimeInMillis());
+            setupOnClickListener();
+        }
+
+        public InfoLayout(Context context, AttributeSet attrs, int defStyle) {
+            super(context, attrs, defStyle);
+            LayoutInflater inflater = LayoutInflater.from(context);
+            inflater.inflate(R.layout.info_layout, this);
+            textView = findViewById(R.id.infoText);
+            textView.setId((int) Calendar.getInstance().getTimeInMillis());
+            setupOnClickListener();
+        }
+
+        public void setText(String text) {
+            textView.setText(text);
+        }
+
+        public int getTextId() {
+            return textView.getId();
+        }
+
+        public String getText() {
+            return textView.getText().toString();
+        }
+
+        protected void setupOnClickListener() {
+            textView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            // Finds the layout containing the selected infoView
+            AbstractLayout abstractLayout = findLayout(view);
+
+            if(abstractLayout != null) {
+                // Updates text vars and calls calendar addition method
+                abstractLayout.updateTexts(view);
+                addToCalendar(abstractLayout);
+            }
         }
     }
 }
