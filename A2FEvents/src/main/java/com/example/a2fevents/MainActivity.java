@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
                 return -1;
             } else {
                 String text = "";
-                
+
                 if(timeText.contains("WHEN") || timeText.contains("When")) {
 
                     text = timeText.substring(timeText.indexOf(':') + 1);

@@ -176,6 +176,17 @@ public abstract class AbstractLayout extends ConstraintLayout {
         timeText = getClickedText(numTimes, times, clickedView);
         locationText = getClickedText(numLocations, locations, clickedView);
         descriptionText = getClickedText(numDescriptions, descriptions, clickedView);
+        updateName();
+    }
+
+    private void updateName() {
+        if(numTimes > 1) {
+            if(timeText.matches(".*[0-9][aApP][mM]\\s[-]\\s.*\\s[@]\\s.*")) {
+                String text = timeText.substring(timeText.indexOf('-') + 1);
+                text = text.substring(0, text.indexOf('@'));
+                nameText = text.trim();
+            }
+        }
     }
 
     public boolean hasView(View view) {
