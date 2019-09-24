@@ -107,22 +107,6 @@ def main():
     soup = setup()
     eventList = []
 
-    # Checks for save the date events
-    saveTheDate = soup.find_all('div', attrs={'id': 'savethedate-page'})
-    if len(saveTheDate) > 0:
-        saveTheDate = saveTheDate[0].contents[1].contents[1].contents[0].contents[0].contents
-        saveTheDateTitle = saveTheDate[0].text.strip()
-        saveTheDate = saveTheDate[1].contents
-        saveTheDateImage = saveTheDate[0].contents[0].contents[0].contents[1].contents[1].contents[1].contents[1].contents[0]
-        saveTheDateImageLink = saveTheDateImage['src']
-        saveTheDateImageName = saveTheDateImage['alt']
-        saveTheDateInfo = saveTheDate[1].contents[0].contents[0].contents
-        excerptList = []
-        excerptList.append(saveTheDateInfo[0].text)
-        excerptList.append(saveTheDateInfo[1].text)
-        excerptList.append(saveTheDateInfo[2].text)
-        eventList.append(Event(saveTheDateImageLink, saveTheDateImageName, '', '', saveTheDateTitle, excerptList))
-
     # Get Information
     events = soup.find_all('div', attrs={'class': 'summary-item'})
    
