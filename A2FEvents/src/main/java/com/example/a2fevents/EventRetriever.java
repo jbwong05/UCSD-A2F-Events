@@ -14,21 +14,15 @@ import java.util.concurrent.TimeUnit;
 
 public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
 
-    private static final int HAS_SAVE_THE_DATE = 1;
-    private static final int DOES_NOT_HAVE_SAVE_THE_DATE = 0;
-    private static final int EVENT = 2;
-    private static final int SAVE_THE_DATE = 3;
     private static final int ADD_VIEW = 4;
     private static final int REMOVE_STATUS_VIEW = 5;
     private static final long IMAGE_SIZE = 90000;
     private static int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
-    private int hasSaveTheDate;
     private File folder;
     private List<PyObject> events;
 
     public EventRetriever(File theFolder) {
         folder = theFolder;
-        hasSaveTheDate = DOES_NOT_HAVE_SAVE_THE_DATE;
     }
 
     /*
@@ -48,15 +42,6 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
         // Gets list upcoming events
         events = getEvents();
 
-        // Checks if save the date events found
-        if(events.size() > 0) {
-
-            PyObject eventName =  events.get(0).get(StringConstants.EVENT_NAME);
-            if(eventName != null) {
-                hasSaveTheDate = eventName.toString().equals(StringConstants.SAVE_THE_DATE_NAME) ?  HAS_SAVE_THE_DATE : DOES_NOT_HAVE_SAVE_THE_DATE;
-            }
-        }
-
         // Array of data to be sent to onPostExecute
         Object[] toReturn = new Object[3];
 
@@ -74,19 +59,14 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
             // Removes the status view
             publishProgress(REMOVE_STATUS_VIEW, mainActivity, context, linearLayout, null, null);
 
-            int numExcerpts = getNumExcerpts(events.get(0));
+            int numExcerpts;
 
             int numEvents = events.size();
 
-            // Adds SaveTheDate View if necessary
-            if(hasSaveTheDate == HAS_SAVE_THE_DATE) {
-                publishProgress(ADD_VIEW, mainActivity, context, linearLayout, SAVE_THE_DATE, numExcerpts);
-            }
-
             // Adds the remaining events
-            for(int i = 1; i < numEvents; i++) {
+            for(int i = 0; i < numEvents; i++) {
                 numExcerpts = getNumExcerpts(events.get(i));
-                publishProgress(ADD_VIEW, mainActivity, context, linearLayout, EVENT, numExcerpts);
+                publishProgress(ADD_VIEW, mainActivity, context, linearLayout, numExcerpts);
             }
 
             toReturn[0] = true;
@@ -117,16 +97,8 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
 
         // Determines action
         if((Integer) params[0] == ADD_VIEW) {
-            int numEvents = (Integer) params[5];
-
-            // Checks if event layout is to be added
-            if((Integer) params[4] == EVENT) {
-                linearLayout.addView(mainActivity.new EventLayout(context, mainActivity, numEvents));
-
-                // Otherwise add save the date layout
-            } else if((Integer) params[4] == SAVE_THE_DATE) {
-                linearLayout.addView(mainActivity.new SaveTheDateLayout(context, mainActivity, numEvents));
-            }
+            int numEvents = (Integer) params[4];
+            linearLayout.addView(mainActivity.new EventLayout(context, mainActivity, numEvents));
 
             // Removes the status TextView
         } else if((Integer) params[0] == REMOVE_STATUS_VIEW) {
