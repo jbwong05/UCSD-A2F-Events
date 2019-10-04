@@ -19,6 +19,8 @@ public class StringConstants {
     public static String MAIN_FUNCTION;
     public static String CALENDAR_PROMPT_TAG;
     public static String CALENDAR_INTENT_TYPE;
+    public static String A2F_WEBSITE;
+    public static String GRACEPOINT_WEBSITE;
 
     public static void setupStringConstants(Context context) {
         // Retrieves String constants from xml
@@ -39,5 +41,7 @@ public class StringConstants {
         MAIN_FUNCTION = resources.getString(R.string.main_function);
         CALENDAR_PROMPT_TAG = resources.getString(R.string.calendar_prompt_tag);
         CALENDAR_INTENT_TYPE = resources.getString(R.string.calendar_intent_type);
+        A2F_WEBSITE = resources.getString(R.string.a2f_website);
+        GRACEPOINT_WEBSITE = resources.getString(R.string.gracepoint_website);
     }
 }

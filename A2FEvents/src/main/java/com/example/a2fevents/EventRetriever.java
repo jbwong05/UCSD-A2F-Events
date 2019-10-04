@@ -7,6 +7,7 @@ import android.widget.TextView;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -130,9 +131,62 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
         // Calls the getUpcomingEvents python script to retrieve any upcoming events
         Python py = Python.getInstance();
         PyObject eventGetter = py.getModule(StringConstants.SCRIPT_NAME);
-        PyObject eventList = eventGetter.callAttr(StringConstants.MAIN_FUNCTION);
+        PyObject a2fEvents = eventGetter.callAttr(StringConstants.MAIN_FUNCTION, StringConstants.A2F_WEBSITE);
+        PyObject gracepointEvents = eventGetter.callAttr(StringConstants.MAIN_FUNCTION, StringConstants.GRACEPOINT_WEBSITE);
 
-        return eventList.asList();
+        return mergeLists(a2fEvents.asList(), gracepointEvents.asList());
+    }
+
+    private List<PyObject> mergeLists(List<PyObject> a2fEvents, List<PyObject> gracepointEvents) {
+        // Merges the a2f and gracepoint events based on the month and day number
+        List<PyObject> returnList = new ArrayList<>();
+
+        int a2fIndex = 0;
+        int gracepointIndex = 0;
+
+        while(a2fIndex < a2fEvents.size() && gracepointIndex < gracepointEvents.size()) {
+
+            PyObject a2fEventMonth = a2fEvents.get(a2fIndex).get(StringConstants.EVENT_MONTH);
+            PyObject a2fEventDay = a2fEvents.get(a2fIndex).get(StringConstants.EVENT_DAY_NUMBER);
+            PyObject gracepointEventMonth = gracepointEvents.get(gracepointIndex).get(StringConstants.EVENT_MONTH);
+            PyObject gracepointEventDay = gracepointEvents.get(gracepointIndex).get(StringConstants.EVENT_DAY_NUMBER);
+
+            if(a2fEventMonth == null || a2fEventDay == null) {
+                a2fIndex++;
+                continue;
+            }
+
+            if(gracepointEventMonth == null || gracepointEventDay == null) {
+                gracepointIndex++;
+                continue;
+            }
+
+            int a2fMonth = CalendarUtilities.convertMonth(a2fEventMonth.toString());
+            int gracepointMonth = CalendarUtilities.convertMonth(gracepointEventMonth.toString());
+
+            if(CalendarUtilities.comesBefore(a2fMonth, Integer.parseInt(a2fEventDay.toString()), gracepointMonth, Integer.parseInt(gracepointEventDay.toString()))) {
+                returnList.add(a2fEvents.get(a2fIndex++));
+            } else {
+                returnList.add(gracepointEvents.get(gracepointIndex++));
+            }
+        }
+
+        List<PyObject> remainingList;
+        int currentIndex;
+
+        if(a2fIndex < a2fEvents.size()) {
+            remainingList = a2fEvents;
+            currentIndex = a2fIndex;
+        } else {
+            remainingList = gracepointEvents;
+            currentIndex = gracepointIndex;
+        }
+
+        for(; currentIndex < remainingList.size(); currentIndex++) {
+            returnList.add(remainingList.get(currentIndex));
+        }
+
+        return returnList;
     }
 
     private int getNumExcerpts(PyObject event) {
