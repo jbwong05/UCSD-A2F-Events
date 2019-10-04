@@ -50,6 +50,16 @@ public class CalendarUtilities {
         }
     }
 
+    public static boolean comesBefore(int firstMonth, int firstDay, int secondMonth, int secondDay) {
+        // New year case one month in advance
+        if(secondMonth == Calendar.JANUARY && firstMonth == Calendar.JANUARY) {
+            return false;
+
+        } else {
+            return firstMonth < secondMonth || (firstMonth == secondMonth && firstDay < secondDay);
+        }
+    }
+
     public static int adjustTime(int originalTime, int ampm) {
 
         // Anything AM but 12 or 12 PM

@@ -11,9 +11,8 @@ class Event:
         self.eventExcerpts = theExcerpts
         self.eventNumExcerpts = len(theExcerpts)
 
-def setup():
+def setup(webpage):
     # Gets HTML from A2F website
-    webpage = 'http://www.ucsda2f.org/'
     request = requests.get(webpage)
     return BeautifulSoup(request.text, 'html.parser')
 
@@ -102,9 +101,9 @@ def getIndex(key, listToSearch):
         index = index + 1
     return str(-1)
 
-def main():
+def main(webpage):
     # Setup HTML Parser
-    soup = setup()
+    soup = setup(webpage)
     eventList = []
 
     # Get Information
