@@ -15,8 +15,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import pl.droidsonroids.gif.GifImageView;
-
 public class MainActivity extends AppCompatActivity {
 
     private EventRetriever retriever;
@@ -84,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         public EventLayout(Context context, MainActivity mainActivity, int numExcerpts) {
             super(context);
             LayoutInflater inflater = LayoutInflater.from(context);
-            inflater.inflate(R.layout.animated_event_layout, this);
+            inflater.inflate(R.layout.event_layout, this);
             addInfoViews(context, mainActivity, numExcerpts);
             setupViews();
             setupOnClickListener();
