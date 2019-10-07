@@ -13,6 +13,8 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 
+import pl.droidsonroids.gif.GifDrawable;
+
 public abstract class AbstractLayout extends ConstraintLayout {
 
     private static int id = (int) Calendar.getInstance().getTimeInMillis();
@@ -59,8 +61,8 @@ public abstract class AbstractLayout extends ConstraintLayout {
         excerptStartIndex = constraintLayout.getChildCount();
         infoLayouts = new SparseArray<>();
 
-        for(int i = 0; i < numInfo; i++) {
-            MainActivity.InfoLayout infoLayout =  mainActivity.new InfoLayout(context);
+        for (int i = 0; i < numInfo; i++) {
+            MainActivity.InfoLayout infoLayout = mainActivity.new InfoLayout(context);
             infoLayouts.append(infoLayout.getTextId(), infoLayout);
             infoLayout.setId(id++);
             View aboveChild = constraintLayout.getChildAt(constraintLayout.getChildCount() - 1);
@@ -82,24 +84,18 @@ public abstract class AbstractLayout extends ConstraintLayout {
     }
 
     public void displayEvent(String imagePath, String month, String dayNumber, String name, List<PyObject> excerpts) {
-
-        // Displays the image if it exists
-        if(!imagePath.equals("")) {
-            File image = new File(imagePath);
-            if(image.exists()) {
-                imageView.setImageBitmap(BitmapFactory.decodeFile(imagePath));
-            }
-        }
+        // Displays the image
+        displayImage(imagePath);
 
         // Sets and stores text of TextViews
         nameView.setText(name);
         nameText = name;
 
         // Displays excerpt infos and saves off Strings
-        for(int i = 0; i < excerpts.size(); i++) {
+        for (int i = 0; i < excerpts.size(); i++) {
             PyObject text = excerpts.get(i);
 
-            if(text != null) {
+            if (text != null) {
                 ConstraintLayout constraintLayout = (ConstraintLayout) this.getChildAt(0);
                 MainActivity.InfoLayout infoLayout = (MainActivity.InfoLayout) constraintLayout.getChildAt(i + excerptStartIndex);
                 infoLayout.setText(text.toString());
@@ -108,22 +104,42 @@ public abstract class AbstractLayout extends ConstraintLayout {
         }
     }
 
+    private void displayImage(String imagePath) {
+        // Displays the image if it exists
+        if (!imagePath.equals("")) {
+            File image = new File(imagePath);
+            if (image.exists()) {
+                try {
+                    if (Image.isGIF(imagePath)) {
+                        GifDrawable gifDrawable = new GifDrawable(image);
+                        imageView.setImageDrawable(gifDrawable);
+
+                    } else {
+                        imageView.setImageBitmap(BitmapFactory.decodeFile(imagePath));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     private void addToList(int id, String text) {
         // Saves off info Strings
         boolean added = false;
-        if(text.contains("WHEN:") || text.contains("When:") || text.matches("^[0-9][aApP][mM]\\s[-]\\s.*")) {
+        if (text.contains("WHEN:") || text.contains("When:") || text.matches(".*(\\s[0-9]|[0-9][0-9])([:]|)([0-9][0-9]|)(\\s|)[aApP][mM].*")) {
             numTimes++;
             times.append(id, text);
             added = true;
         }
 
-        if(text.contains("WHERE:") || text.contains("Where:") || text.matches(".*\\s[@]\\s\\D.*")) {
+        if (text.contains("WHERE:") || text.contains("Where:") || text.matches(".*\\s[@]\\s\\D.*")) {
             numLocations++;
             locations.append(id, text);
             added = true;
         }
 
-        if(!added) {
+        if (!added) {
             numDescriptions++;
             descriptions.append(id, text);
         }
@@ -138,10 +154,10 @@ public abstract class AbstractLayout extends ConstraintLayout {
     public String getName() {
 
         // Retrieves the name
-        if(numTimes > 1) {
+        if (numTimes > 1 && timeText != null) {
 
             // Handles multiple names case
-            if(timeText.matches(".*[0-9][aApP][mM]\\s[-]\\s.*\\s[@]\\s.*")) {
+            if (timeText.matches(".*[0-9][aApP][mM]\\s[-]\\s.*\\s[@]\\s.*")) {
                 String text = timeText.substring(timeText.indexOf('-') + 1);
                 text = text.substring(0, text.indexOf('@'));
                 nameText = text.trim();
@@ -151,7 +167,7 @@ public abstract class AbstractLayout extends ConstraintLayout {
     }
 
     public String getDescription() {
-        if(descriptionText == null) {
+        if (descriptionText == null) {
             return "";
         }
 
@@ -160,19 +176,19 @@ public abstract class AbstractLayout extends ConstraintLayout {
 
     public String getLocation() {
 
-        if(locationText == null) {
+        if (locationText == null) {
             return "";
         }
 
         // Where: and Multiple locations
-        if((locationText.contains("Where:") || locationText.contains("WHERE:")) && locationText.matches(".*([\\s][@][\\s].*){2,}")) {
+        if ((locationText.contains("Where:") || locationText.contains("WHERE:")) && locationText.matches(".*([\\s][@][\\s].*){2,}")) {
             // Removes "Where: "
             locationText = locationText.substring(locationText.indexOf(":") + 2);
 
         } else if (locationText.contains("Where:") || locationText.contains("WHERE:")) {
             locationText = locationText.substring(locationText.indexOf(":") + 2);
 
-        } else if(locationText.equals(timeText)) {
+        } else if (locationText.equals(timeText)) {
             // Time and location text are the same
             locationText = locationText.substring(locationText.indexOf("@") + 1).trim();
         }
@@ -184,14 +200,14 @@ public abstract class AbstractLayout extends ConstraintLayout {
         String text = null;
 
         // Retrieves the text that was clicked
-        if(numInfos == 1) {
+        if (numInfos == 1) {
             // Only one possibility
             text = array.get(array.keyAt(0));
 
-        } else if(numInfos > 1) {
+        } else if (numInfos > 1) {
 
             // Multiple possibilities
-            if(infoLayouts.indexOfKey(clickedView.getId()) >= 0) {
+            if (infoLayouts.indexOfKey(clickedView.getId()) >= 0) {
                 // Multiple possibilities but infoLayout was clicked
                 text = infoLayouts.get(infoLayouts.keyAt(infoLayouts.indexOfKey(clickedView.getId()))).getText();
             }

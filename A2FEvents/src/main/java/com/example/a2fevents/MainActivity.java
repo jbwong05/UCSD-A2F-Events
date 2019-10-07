@@ -14,6 +14,8 @@ import com.chaquo.python.PyObject;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -209,31 +211,18 @@ public class MainActivity extends AppCompatActivity {
             if(timeText == null) {
                 return -1;
             } else {
-                String text = "";
-                // If preceded by "when"
-                if(timeText.contains("WHEN") || timeText.contains("When")) {
 
-                    text = timeText.substring(timeText.indexOf(':') + 2);
+                Pattern pattern = Pattern.compile("(\\s[0-9]|[0-9][0-9])([:]|)([0-9][0-9]|)(\\s|)[aApP][mM]");
+                Matcher matcher = pattern.matcher(timeText);
 
-                    if(text.contains(":")) {
-                        text = text.substring(0, text.indexOf(':'));
-                    } else {
-                        text = text.substring(0, text.indexOf(' '));
-                    }
-
-
-                    // If has pattern "...9pm - ..."
-                } else if(timeText.matches(".*[0-9][aApP][mM]\\s[-]\\s.*")) {
-
-                    // If starts with pattern "9:09am - ..."
-                    if(timeText.matches("^[0-9][:][0-9][0-9][aApP][mM]\\s[-]\\s.*")) {
-                        text = timeText.substring(0, timeText.indexOf(':'));
-                    } else {
-                        text = timeText.substring(0, timeText.indexOf(' ') - 2);
+                if(matcher.find()) {
+                    String match = matcher.group(1);
+                    if(match != null) {
+                        return CalendarUtilities.adjustTime(Integer.parseInt(match.trim()), getStartAMPM());
                     }
                 }
 
-                return CalendarUtilities.adjustTime(Integer.parseInt(text), getStartAMPM());
+                return 0;
             }
         }
 
@@ -247,33 +236,17 @@ public class MainActivity extends AppCompatActivity {
             if(timeText == null) {
                 return -1;
             } else {
-                String text = "";
+                Pattern pattern = Pattern.compile("(\\s[0-9]|[0-9][0-9])([:]|)([0-9][0-9]|)(\\s|)[aApP][mM]");
+                Matcher matcher = pattern.matcher(timeText);
 
-                // If preceded by "when"
-                if(timeText.contains("WHEN") || timeText.contains("When")) {
-
-                    text = timeText.substring(timeText.indexOf(':') + 1);
-
-                    if(text.contains(":")) {
-                        text = text.substring(text.indexOf(':') + 1);
-                        text = text.substring(0, text.indexOf(' '));
-                    } else {
-                        return 0;
-                    }
-
-                    // If has pattern "...9pm - ..."
-                } else if(timeText.matches(".*[0-9][aApP][mM]\\s[-]\\s.*")) {
-
-                    // If has pattern "...9pm - ..."
-                    if(timeText.matches("^[0-9][:][0-9][0-9][aApP][mM]\\s[-]\\s.*")) {
-                        text = timeText.substring(timeText.indexOf(':') + 1);
-                        text = text.substring(0, text.indexOf(' ') - 2);
-                    } else {
-                        return 0;
+                if(matcher.find()) {
+                    String match = matcher.group(3);
+                    if(match != null) {
+                        return Integer.parseInt(match.trim());
                     }
                 }
 
-                return Integer.parseInt(text);
+                return 0;
             }
         }
 

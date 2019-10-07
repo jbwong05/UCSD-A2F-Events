@@ -3,9 +3,10 @@ package com.example.a2fevents;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import androidx.appcompat.widget.AppCompatImageView;
 
-public class ProportionalImageView extends AppCompatImageView {
+import pl.droidsonroids.gif.GifImageView;
+
+public class ProportionalImageView extends GifImageView {
 
     private static final double WIDTH_TO_HEIGHT_RATIO = 1.791666667;
 
