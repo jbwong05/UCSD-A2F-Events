@@ -30,6 +30,10 @@ public class Image {
         return path + "/" + StringConstants.IMAGE_PREFIX + imageName.hashCode() + getExtension(imageName);
     }
 
+    public static boolean isGIF(String path) {
+        return path.matches(".*[.][g][i][f]");
+    }
+
     private static String getExtension(String imageName) {
         // Retrieves the extension for the current image
         String extension = imageName;

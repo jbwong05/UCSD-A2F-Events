@@ -13,6 +13,8 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 
+import pl.droidsonroids.gif.GifDrawable;
+
 public abstract class AbstractLayout extends ConstraintLayout {
 
     private static int id = (int) Calendar.getInstance().getTimeInMillis();
@@ -82,14 +84,8 @@ public abstract class AbstractLayout extends ConstraintLayout {
     }
 
     public void displayEvent(String imagePath, String month, String dayNumber, String name, List<PyObject> excerpts) {
-
-        // Displays the image if it exists
-        if(!imagePath.equals("")) {
-            File image = new File(imagePath);
-            if(image.exists()) {
-                imageView.setImageBitmap(BitmapFactory.decodeFile(imagePath));
-            }
-        }
+        // Displays the image
+        displayImage(imagePath);
 
         // Sets and stores text of TextViews
         nameView.setText(name);
@@ -104,6 +100,26 @@ public abstract class AbstractLayout extends ConstraintLayout {
                 MainActivity.InfoLayout infoLayout = (MainActivity.InfoLayout) constraintLayout.getChildAt(i + excerptStartIndex);
                 infoLayout.setText(text.toString());
                 addToList(infoLayout.getTextId(), text.toString());
+            }
+        }
+    }
+
+    private void displayImage(String imagePath) {
+        // Displays the image if it exists
+        if(!imagePath.equals("")) {
+            File image = new File(imagePath);
+            if(image.exists()) {
+                try {
+                    if(Image.isGIF(imagePath)) {
+                        GifDrawable gifDrawable = new GifDrawable(image);
+                        imageView.setImageDrawable(gifDrawable);
+
+                    } else {
+                        imageView.setImageBitmap(BitmapFactory.decodeFile(imagePath));
+                    }
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
