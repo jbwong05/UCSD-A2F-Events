@@ -132,17 +132,31 @@ def main(webpage):
         for i in range(len(events)):
             contents = removeReturns(info[i].contents)
 
-            # Retrieves the title
-            titleTag = contents[getIndex(' Title ', contents)]
-            title = titleTag.a.text
-
-            # Retrieves the excerpt tag
-            excerptTag = contents[getIndex(' Excerpt ', contents)]
-            excerptList = removeReturns(excerptTag.contents)
+            titleIndex = getIndex(' Title ', contents)
+            title = ""
+            if titleIndex != -1:
+                # Retrieves the title
+                titleTag = contents[getIndex(' Title ', contents)]
+                title = titleTag.a.text
 
             excerpts = []
-            for j in range(len(excerptList)):
-                excerpts.append(excerptList[j].text)
+            excerptIndex = getIndex(' Excerpt ', contents)
+            if excerptIndex != -1:
+                # Retrieves the excerpt tag
+                excerptTag = contents[getIndex(' Excerpt ', contents)]
+                excerptList = removeReturns(excerptTag.contents)
+
+                for j in range(len(excerptList)):
+                    excerpts.append(excerptList[j].text)
+
+            dateTimeIndex = getIndex(' Metadata (Below Content) ', contents)
+            if dateTimeIndex != -1:
+                dateTimeTag = contents[dateTimeIndex]
+                dateTimeList = removeReturns(dateTimeTag.contents)
+                date = removeNonTags(dateTimeList[0].contents)[0].text
+                time = removeNonTags(dateTimeList[1].contents)[0].contents[0].text
+                dateTime = date + ' ' + time
+                excerpts.append(dateTime)
 
             # Adds the event
             eventList.append(Event(images[i], imageNames[i], months[i], dayNumbers[i], title, excerpts))
