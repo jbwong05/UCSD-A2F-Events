@@ -1,6 +1,8 @@
 package com.example.a2fevents;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -54,6 +56,11 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
             actionBar.setCustomView(R.layout.actionbar_layout);
         }
+    }
+
+    public void onActionBarClick(View view) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(StringConstants.A2F_WEBSITE));
+        startActivity(browserIntent);
     }
 
     private void addToCalendar(AbstractLayout layout) {

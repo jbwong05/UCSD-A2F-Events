@@ -23,4 +23,5 @@
     <string name="calendar_intent_type">vnd.android.cursor.item/event</string>
     <string name="a2f_website">https://www.ucsda2f.org/</string>
     <string name="gracepoint_website">https://www.gracepointonline.org/san-diego-ca</string>
+    <string name="action_bar_content_description">action bar button</string>
 </resources>
