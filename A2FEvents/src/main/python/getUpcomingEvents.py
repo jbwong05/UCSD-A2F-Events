@@ -106,6 +106,10 @@ def main(webpage):
     soup = setup(webpage)
     eventList = []
 
+    #updateTimes = soup.find_all('div', attrs={'class': 'sqs-layout', 'data-updtaed-on': '*'})
+    updateTime = soup.find_all('div', attrs={'class': 'sqs-layout', 'data-type': 'page'})
+    updateTime = int(updateTime[1]['data-updated-on'])
+
     # Get Information
     events = soup.find_all('div', attrs={'class': 'summary-item'})
    
