@@ -146,17 +146,19 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
 
         while(a2fIndex < a2fEvents.size() && gracepointIndex < gracepointEvents.size()) {
 
+            PyObject a2fEventName = a2fEvents.get(a2fIndex).get(StringConstants.EVENT_NAME);
             PyObject a2fEventMonth = a2fEvents.get(a2fIndex).get(StringConstants.EVENT_MONTH);
             PyObject a2fEventDay = a2fEvents.get(a2fIndex).get(StringConstants.EVENT_DAY_NUMBER);
+            PyObject gracepointEventName = gracepointEvents.get(gracepointIndex).get(StringConstants.EVENT_NAME);
             PyObject gracepointEventMonth = gracepointEvents.get(gracepointIndex).get(StringConstants.EVENT_MONTH);
             PyObject gracepointEventDay = gracepointEvents.get(gracepointIndex).get(StringConstants.EVENT_DAY_NUMBER);
 
-            if(a2fEventMonth == null || a2fEventDay == null) {
+            if(a2fEventName == null || a2fEventMonth == null || a2fEventDay == null) {
                 a2fIndex++;
                 continue;
             }
 
-            if(gracepointEventMonth == null || gracepointEventDay == null) {
+            if(gracepointEventName == null || gracepointEventMonth == null || gracepointEventDay == null) {
                 gracepointIndex++;
                 continue;
             }
@@ -164,7 +166,10 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
             int a2fMonth = CalendarUtilities.convertMonth(a2fEventMonth.toString());
             int gracepointMonth = CalendarUtilities.convertMonth(gracepointEventMonth.toString());
 
-            if(CalendarUtilities.comesBefore(a2fMonth, Integer.parseInt(a2fEventDay.toString()), gracepointMonth, Integer.parseInt(gracepointEventDay.toString()))) {
+            if((a2fEventName.toString().equals(gracepointEventName.toString()) && CalendarUtilities.isSameDay(a2fMonth, Integer.parseInt(a2fEventDay.toString()), gracepointMonth, Integer.parseInt(gracepointEventDay.toString())))) {
+                returnList.add(a2fEvents.get(a2fIndex++));
+                gracepointIndex++;
+            } else if(CalendarUtilities.comesBefore(a2fMonth, Integer.parseInt(a2fEventDay.toString()), gracepointMonth, Integer.parseInt(gracepointEventDay.toString()))) {
                 returnList.add(a2fEvents.get(a2fIndex++));
             } else {
                 returnList.add(gracepointEvents.get(gracepointIndex++));
