@@ -60,6 +60,10 @@ public class CalendarUtilities {
         }
     }
 
+    public static boolean isSameDay(int firstMonth, int firstDay, int secondMonth, int secondDay) {
+        return firstMonth == secondMonth && firstDay == secondDay;
+    }
+
     public static int adjustTime(int originalTime, int ampm) {
 
         // Anything AM but 12 or 12 PM
