@@ -40,9 +40,11 @@ def main(webpage):
 
             currentImage = event.find('img')
 
-            currentLink = currentImage['data-image']
-
-            currentImageName = stripImageNames(currentLink)
+            currentLink = ''
+            currentImageName = ''
+            if currentImage != None:
+                currentLink = currentImage['data-image']
+                currentImageName = stripImageNames(currentLink)
 
             currentMonth = event.find('span', attrs={'class': 'summary-thumbnail-event-date-month'})
             if currentMonth != None:
