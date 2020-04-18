@@ -260,25 +260,29 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
     private void displayEvents(List<PyObject> events, String destination, LinearLayout linearLayout) {
         PyObject event;
         PyObject eventImageName;
+        PyObject eventImageClickLink;
         PyObject eventMonth;
         PyObject eventDayNumber;
         PyObject eventName;
         PyObject eventExcerpts;
+        PyObject eventExcerptsLinks;
 
         // Loops through the added events and updates each event layout
         for(int i = 0; i < linearLayout.getChildCount(); i++) {
 
             event = events.get(i);
             eventImageName = event.get(StringConstants.EVENT_IMAGE_NAME);
+            eventImageClickLink = event.get(StringConstants.EVENT_IMAGE_CLICK_LINK);
             eventMonth = event.get(StringConstants.EVENT_MONTH);
             eventDayNumber = event.get(StringConstants.EVENT_DAY_NUMBER);
             eventName = event.get(StringConstants.EVENT_NAME);
             eventExcerpts = event.get(StringConstants.EVENT_EXCERPTS);
+            eventExcerptsLinks = event.get(StringConstants.EVENT_EXCERPTS_LINKS);
 
             // null check
-            if(eventImageName != null && eventMonth != null && eventDayNumber != null && eventName != null && eventExcerpts != null) {
+            if(eventImageName != null && eventImageClickLink != null && eventMonth != null && eventDayNumber != null && eventName != null && eventExcerpts != null && eventExcerptsLinks != null) {
                 String path = eventImageName.toString().equals("") ? "" : Image.getFullImagePath(destination, eventImageName.toString());
-                ((AbstractLayout) linearLayout.getChildAt(i)).displayEvent(path, eventMonth.toString(), eventDayNumber.toString(), eventName.toString(), eventExcerpts.asList());
+                ((AbstractLayout) linearLayout.getChildAt(i)).displayEvent(path, eventImageClickLink.toString(), eventMonth.toString(), eventDayNumber.toString(), eventName.toString(), eventExcerpts.asList(), eventExcerptsLinks.asList());
             }
         }
     }

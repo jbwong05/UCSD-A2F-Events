@@ -6,11 +6,13 @@
     <string name="script_name">getUpcomingEvents</string>
     <string name="main_function">main</string>
     <string name="event_image_link">eventImageLink</string>
+    <string name="event_image_click_link">eventImageClickLink</string>
     <string name="event_image_name">eventImageName</string>
     <string name="event_month">eventMonth</string>
     <string name="event_day_number">eventDayNumber</string>
     <string name="event_name">eventName</string>
     <string name="event_excerpts">eventExcerpts</string>
+    <string name="event_excerpts_links">eventExcerptsLinks</string>
     <string name="event_num_excerpts">eventNumExcerpts</string>
     <string name="save_the_date_name">SAVE THE DATE</string>
     <string name="image_prefix">img-</string>

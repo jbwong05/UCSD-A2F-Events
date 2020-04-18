@@ -20,6 +20,7 @@ public abstract class AbstractLayout extends ConstraintLayout {
     private static int id = (int) Calendar.getInstance().getTimeInMillis();
 
     private ProportionalImageView imageView;
+    protected String imageViewClickLink = null;
     private TextView nameView;
     private String nameText;
     protected String locationText = null;
@@ -83,9 +84,10 @@ public abstract class AbstractLayout extends ConstraintLayout {
         nameView = theNameView;
     }
 
-    public void displayEvent(String imagePath, String month, String dayNumber, String name, List<PyObject> excerpts) {
+    public void displayEvent(String imagePath, String imageClickLink, String month, String dayNumber, String name, List<PyObject> excerpts, List<PyObject> excerptLinks) {
         // Displays the image
         displayImage(imagePath);
+        imageViewClickLink = imageClickLink;
 
         // Sets and stores text of TextViews
         nameView.setText(name);
@@ -94,11 +96,13 @@ public abstract class AbstractLayout extends ConstraintLayout {
         // Displays excerpt infos and saves off Strings
         for (int i = 0; i < excerpts.size(); i++) {
             PyObject text = excerpts.get(i);
+            PyObject link = excerptLinks.get(i);
 
             if (text != null) {
                 ConstraintLayout constraintLayout = (ConstraintLayout) this.getChildAt(0);
                 MainActivity.InfoLayout infoLayout = (MainActivity.InfoLayout) constraintLayout.getChildAt(i + excerptStartIndex);
                 infoLayout.setText(text.toString());
+                infoLayout.setInfoLink(link.toString());
                 addToList(infoLayout.getTextId(), text.toString());
             }
         }

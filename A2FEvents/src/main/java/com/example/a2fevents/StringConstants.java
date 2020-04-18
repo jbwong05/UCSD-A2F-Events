@@ -5,11 +5,13 @@ import android.content.res.Resources;
 
 public class StringConstants {
     public static String EVENT_IMAGE_LINK;
+    public static String EVENT_IMAGE_CLICK_LINK;
     public static String EVENT_IMAGE_NAME;
     public static String EVENT_MONTH;
     public static String EVENT_DAY_NUMBER;
     public static String EVENT_NAME;
     public static String EVENT_EXCERPTS;
+    public static String EVENT_EXCERPTS_LINKS;
     public static String EVENT_NUM_EXCERPTS;
     public static String SAVE_THE_DATE_NAME;
     public static String IMAGE_PREFIX;
@@ -27,11 +29,13 @@ public class StringConstants {
         Resources resources = context.getResources();
 
         EVENT_IMAGE_LINK = resources.getString(R.string.event_image_link);
+        EVENT_IMAGE_CLICK_LINK = context.getResources().getString(R.string.event_image_click_link);
         EVENT_IMAGE_NAME = resources.getString(R.string.event_image_name);
         EVENT_MONTH = resources.getString(R.string.event_month);
         EVENT_DAY_NUMBER = resources.getString(R.string.event_day_number);
         EVENT_NAME = resources.getString(R.string.event_name);
         EVENT_EXCERPTS = resources.getString(R.string.event_excerpts);
+        EVENT_EXCERPTS_LINKS = context.getResources().getString(R.string.event_excerpts_links);
         EVENT_NUM_EXCERPTS = resources.getString(R.string.event_num_excerpts);
         SAVE_THE_DATE_NAME = resources.getString(R.string.save_the_date_name);
         IMAGE_PREFIX = resources.getString(R.string.image_prefix);

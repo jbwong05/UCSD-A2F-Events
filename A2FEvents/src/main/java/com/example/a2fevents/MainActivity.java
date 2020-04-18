@@ -135,9 +135,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void displayEvent(String imagePath, String month, String dayNumber, String name, List<PyObject> excerpts) {
+        public void displayEvent(String imagePath, String eventImageClickLink, String month, String dayNumber, String name, List<PyObject> excerpts, List<PyObject> excerptLinks) {
             // Updates the layout with the given event information
-            super.displayEvent(imagePath, month, dayNumber, name, excerpts);
+            super.displayEvent(imagePath, eventImageClickLink, month, dayNumber, name, excerpts, excerptLinks);
             monthDayNumberLayout.displayEvent(month, dayNumber);
         }
 
@@ -284,15 +284,21 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
-            // Add to calendar prompt
-            super.updateTexts(view);
-            addToCalendar(this);
+            if(imageViewClickLink != null) {
+                Intent openLinkIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(imageViewClickLink));
+                startActivity(openLinkIntent);
+            } else {
+                // Add to calendar prompt
+                super.updateTexts(view);
+                addToCalendar(this);
+            }
         }
     }
 
     public class InfoLayout extends ConstraintLayout implements View.OnClickListener {
 
         private TextView textView;
+        private String infoClickLink = null;
 
         public InfoLayout(Context context) {
             super(context);
@@ -325,6 +331,10 @@ public class MainActivity extends AppCompatActivity {
             textView.setText(text);
         }
 
+        public void setInfoLink(String link) {
+            infoClickLink = link;
+        }
+
         public int getTextId() {
             return textView.getId();
         }
@@ -339,13 +349,18 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
-            // Finds the layout containing the selected infoView
-            AbstractLayout abstractLayout = findLayout(view);
+            if(infoClickLink != null) {
+                Intent openLinkIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(infoClickLink));
+                startActivity(openLinkIntent);
+            } else {
+                // Finds the layout containing the selected infoView
+                AbstractLayout abstractLayout = findLayout(view);
 
-            if(abstractLayout != null) {
-                // Updates text vars and calls calendar addition method
-                abstractLayout.updateTexts(view);
-                addToCalendar(abstractLayout);
+                if (abstractLayout != null) {
+                    // Updates text vars and calls calendar addition method
+                    abstractLayout.updateTexts(view);
+                    addToCalendar(abstractLayout);
+                }
             }
         }
     }
