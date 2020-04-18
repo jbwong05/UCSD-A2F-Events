@@ -56,14 +56,17 @@ def main(webpage):
             if currentTitle != None:
                 currentTitle = currentTitle.text
 
-            currentExcerpt = event.find('p')
-            if currentExcerpt != None:
-                currentExcerpt = currentExcerpt.text
+            excerptList = []
+            excerpts = event.find_all('p')
+            for excerpt in excerpts:
+                excerptList.append(excerpt.text)
 
-            eventList.append(Event(currentLink, currentImageName, currentMonth, currentDayNumber, currentTitle, currentExcerpt))
+            eventList.append(Event(currentLink, currentImageName, currentMonth, currentDayNumber, currentTitle, excerptList))
 
         return eventList
        
     else:
         # Return empty list if no events found
         return eventList
+
+main("https://www.ucsda2f.org/")
