@@ -76,6 +76,7 @@ public class EventRetriever extends AsyncTask<Object, Object, Object[]> {
 
         } else {
             toReturn[0] = false;
+            toReturn[1] = linearLayout;
             return toReturn;
         }
     }
