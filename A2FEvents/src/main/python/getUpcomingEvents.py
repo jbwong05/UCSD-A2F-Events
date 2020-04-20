@@ -1,3 +1,4 @@
+import re
 import requests
 from bs4 import BeautifulSoup
 
@@ -31,8 +32,8 @@ def main(webpage):
     eventList = []
 
     # Get Information
-    events = soup.find_all('div', attrs={'class': 'summary-item summary-item-record-type-event sqs-gallery-design-autocolumns-slide summary-item-has-thumbnail summary-item-has-excerpt summary-item-has-cats summary-item-has-tags summary-item-has-author'})
-   
+    events = soup.find_all('div', attrs={'class': re.compile('summary-item summary-item-record-type-event')})
+
     # Checks if events found
     if len(events) > 0:
 
